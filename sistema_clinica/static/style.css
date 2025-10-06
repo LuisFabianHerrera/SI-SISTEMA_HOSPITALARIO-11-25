@@ -1,0 +1,112 @@
+/* --- Estilo general --- */
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #2c3e50, #34495e);
+    color: #ecf0f1;
+}
+
+/* --- Login --- */
+.login-container {
+    background-color: #1f2a38;
+    padding: 30px 40px;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    width: 350px;
+    margin: 100px auto;
+}
+
+.login-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.input-group {
+    margin-bottom: 15px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+    outline: none;
+    background-color: #2c3e50;
+    color: #ecf0f1;
+}
+
+.input-group input::placeholder {
+    color: #95a5a6;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+    background-color: #3498db;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button:hover {
+    background-color: #2980b9;
+}
+
+.error {
+    color: #e74c3c;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+/* --- Paneles --- */
+.panel-container {
+    max-width: 600px;
+    margin: 50px auto;
+    background-color: #1f2a38;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    text-align: center;
+}
+
+.panel-container h2 {
+    margin-bottom: 30px;
+    font-size: 24px;
+}
+
+.panel-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.panel-buttons .btn {
+    display: inline-block;
+    padding: 12px 20px;
+    border-radius: 10px;
+    text-decoration: none;
+    background-color: #3498db;
+    color: #fff;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.panel-buttons .btn:hover {
+    background-color: #2980b9;
+}
+
+.panel-buttons .btn.logout {
+    background-color: #e74c3c;
+}
+
+.panel-buttons .btn.logout:hover {
+    background-color: #c0392b;
+}

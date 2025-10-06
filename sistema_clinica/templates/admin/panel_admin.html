@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Administrador</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="panel-container">
+        <h2>Bienvenido Administrador: {{ session['usuario'] }}</h2>
+        <div class="panel-buttons">
+            <a href="{{ url_for('listar_usuarios') }}" class="btn">Gestionar Usuarios</a>
+            <a href="#" class="btn">Gestionar Equipos</a>
+            <a href="#" class="btn">Ver Reportes</a>
+            <a href="{{ url_for('logout') }}" class="btn logout">Cerrar Sesión</a>
+        </div>
+    </div>
+</body>
+</html>

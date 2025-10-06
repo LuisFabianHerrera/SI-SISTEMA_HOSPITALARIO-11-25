@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Pacientes</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="panel-container">
+        <h2>Lista de Pacientes</h2>
+        <a href="{{ url_for('agregar_paciente') }}" class="btn">Agregar Paciente</a>
+        <table border="1" style="width:100%; margin-top:20px; background-color:#2c3e50; color:white; border-collapse: collapse;">
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Apellidos</th>
+                <th>CI</th>
+                <th>Edad</th>
+                <th>Género</th>
+                <th>Teléfono</th>
+                <th>Acciones</th>
+            </tr>
+            {% for p in pacientes %}
+            <tr>
+                <td>{{ p.id }}</td>
+                <td>{{ p.nombre }}</td>
+                <td>{{ p.apellido_paterno }} {{ p.apellido_materno }}</td>
+                <td>{{ p.ci }}</td>
+                <td>{{ p.edad }}</td>
+                <td>{{ p.genero }}</td>
+                <td>{{ p.telefono }}</td>
+                <td>
+                    <a href="{{ url_for('editar_paciente', id=p.id) }}" class="btn">Editar</a>
+                    <a href="{{ url_for('eliminar_paciente', id=p.id) }}" class="btn logout">Eliminar</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        <a href="{{ url_for('panel_enfermero') }}" class="btn" style="margin-top:20px;">Volver</a>
+    </div>
+</body>
+</html>

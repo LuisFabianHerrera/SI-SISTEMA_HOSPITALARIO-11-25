@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>{% if usuario %}Editar{% else %}Agregar{% endif %} Usuario</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="panel-container">
+    <h2>{% if usuario %}Editar{% else %}Agregar{% endif %} Usuario</h2>
+    <form method="POST">
+        <div class="input-group">
+            <label>Usuario</label>
+            <input type="text" name="usuario" value="{{ usuario.usuario if usuario else '' }}" required>
+        </div>
+        <div class="input-group">
+            <label>Contraseña</label>
+            <input type="password" name="password" value="{{ usuario.password if usuario else '' }}" required>
+        </div>
+        <div class="input-group">
+            <label>Rol</label>
+            <select name="rol" required>
+                <option value="administrador" {% if usuario and usuario.rol == 'administrador' %}selected{% endif %}>Administrador</option>
+                <option value="doctor" {% if usuario and usuario.rol == 'doctor' %}selected{% endif %}>Doctor</option>
+                <option value="enfermero" {% if usuario and usuario.rol == 'enfermero' %}selected{% endif %}>Enfermero</option>
+            </select>
+        </div>
+        <button type="submit">{% if usuario %}Actualizar{% else %}Agregar{% endif %}</button>
+    </form>
+    <a href="{{ url_for('listar_usuarios') }}" class="btn" style="margin-top:20px;">Volver</a>
+</div>
+</body>
+</html>

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Enfermero</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="panel-container">
+        <h2>Bienvenido Enfermero: {{ session['usuario'] }}</h2>
+        <div class="panel-buttons">
+            <!-- ✅ Cambiado a 'listar_pacientes' -->
+            <a href="{{ url_for('listar_pacientes') }}" class="btn">Ver Pacientes</a>
+            
+            <!-- ✅ Nuevo botón para registrar -->
+            <a href="{{ url_for('agregar_paciente') }}" class="btn">Registrar Paciente</a>
+            
+            <a href="#" class="btn">Registrar Signos Vitales</a>
+            <a href="{{ url_for('logout') }}" class="btn logout">Cerrar Sesión</a>
+        </div>
+    </div>
+</body>
+</html>

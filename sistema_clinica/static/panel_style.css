@@ -1,0 +1,42 @@
+/* Títulos de los paneles */
+.panel-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #ffffff;
+    text-align: center;
+    margin-bottom: 25px;
+    text-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+}
+
+/* Botones de acción en paneles */
+.panel-button {
+    padding: 12px 25px;
+    margin: 10px;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    color: #fff;
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.panel-button:hover {
+    background: linear-gradient(135deg, #2980b9, #1c5f85);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+}
+
+.panel-button:active {
+    transform: translateY(0);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+/* Opcional: contenedor de botones centrado */
+.panel-buttons {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>{% if paciente %}Editar{% else %}Registrar{% endif %} Paciente</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="panel-container">
+        <h2>{% if paciente %}Editar{% else %}Registrar{% endif %} Paciente</h2>
+        <form method="POST">
+            <div class="input-group">
+                <label>Nombre</label>
+                <input type="text" name="nombre" value="{{ paciente.nombre if paciente else '' }}" required>
+            </div>
+            <div class="input-group">
+                <label>Apellido Paterno</label>
+                <input type="text" name="apellido_paterno" value="{{ paciente.apellido_paterno if paciente else '' }}" required>
+            </div>
+            <div class="input-group">
+                <label>Apellido Materno</label>
+                <input type="text" name="apellido_materno" value="{{ paciente.apellido_materno if paciente else '' }}" required>
+            </div>
+            <div class="input-group">
+                <label>CI</label>
+                <input type="text" name="ci" value="{{ paciente.ci if paciente else '' }}" required>
+            </div>
+            <div class="input-group">
+                <label>Fecha de Nacimiento</label>
+                <input type="date" name="fecha_nacimiento" value="{{ paciente.fecha_nacimiento if paciente else '' }}" required>
+            </div>
+            <div class="input-group">
+                <label>Edad</label>
+                <input type="number" name="edad" value="{{ paciente.edad if paciente else '' }}" required>
+            </div>
+            <div class="input-group">
+                <label>Género</label>
+                <select name="genero" required>
+                    <option value="Masculino" {% if paciente and paciente.genero == 'Masculino' %}selected{% endif %}>Masculino</option>
+                    <option value="Femenino" {% if paciente and paciente.genero == 'Femenino' %}selected{% endif %}>Femenino</option>
+                    <option value="Otro" {% if paciente and paciente.genero == 'Otro' %}selected{% endif %}>Otro</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Teléfono</label>
+                <input type="text" name="telefono" value="{{ paciente.telefono if paciente else '' }}">
+            </div>
+            <button type="submit">{% if paciente %}Actualizar{% else %}Registrar{% endif %}</button>
+        </form>
+        <a href="{{ url_for('listar_pacientes') }}" class="btn" style="margin-top:20px;">Volver</a>
+    </div>
+</body>
+</html>
