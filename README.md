@@ -66,8 +66,8 @@ Una vez que el servidor Django esté en funcionamiento, accede a la aplicación 
 ## 📂 Estructura del Proyecto
 El proyecto sigue una estructura estándar de Django:
 ├── SI-SISTEMA_HOSPITALARIO-11-25/
-│   ├── (nombre_app_citas)/     # Módulo Funcional: Citas
-│   ├── (nombre_app_pacientes)/ # Módulo Funcional: Pacientes/Historial
+│   ├── Modulo citas/
+│   ├── Modulo pacientes/
 │   ├── si_sistema_hospitalario/  # Configuración del proyecto (settings, urls)
 │   ├── database/               # Script SQL (Opcional)
 │   └── manage.py
