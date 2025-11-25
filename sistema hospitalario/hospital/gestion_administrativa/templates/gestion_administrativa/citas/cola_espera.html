@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}Cola de Espera{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <h2 class="mb-4 text-primary fw-bold">
+        <i class="bi bi-list-check"></i> Cola de Espera
+    </h2>
+        <div class="mb-3">
+        <a href="{% url 'medico_home' %}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left-circle"></i> Volver
+        </a>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped align-middle text-center">
+            <thead class="table-dark">
+                <tr>
+                    <th>N° Atención</th>
+                    <th>Paciente</th>
+                    <th>Hora</th>
+                    <th>Prioridad</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cita in citas %}
+                    <tr>
+                        <td>{{ cita.numero_atencion }}</td>
+                        <td>{{ cita.paciente }}</td>
+                        <td>{{ cita.hora }}</td>
+                        <td>
+                            {% if cita.prioridad == "Alta" %}
+                                <span class="badge bg-danger">{{ cita.prioridad }}</span>
+                            {% elif cita.prioridad == "Media" %}
+                                <span class="badge bg-warning text-dark">{{ cita.prioridad }}</span>
+                            {% else %}
+                                <span class="badge bg-info text-dark">{{ cita.prioridad }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if cita.estado == "en_espera" %}
+                                <a href="{% url 'comenzar_cita' cita.id %}" class="btn btn-info btn-sm">
+                                    <i class="bi bi-play-circle"></i> Comenzar
+                                </a>
+                            {% elif cita.estado == "en_progreso" %}
+                                <a href="{% url 'atender_siguiente' cita.doctor.id %}" class="btn btn-success btn-sm">
+                                    <i class="bi bi-check-circle"></i> Marcar atendida
+                                </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center">No hay pacientes en espera</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<style>
+    /* Borde más grueso para toda la tabla */
+    table.table-bordered th,
+    table.table-bordered td {
+        border: 2px solid #000;
+    }
+
+    /* Ajuste de altura de filas */
+    table.table-bordered td, table.table-bordered th {
+        vertical-align: middle;
+    }
+
+    /* Espaciado de botones */
+    a.btn {
+        margin: 2px 0;
+    }
+</style>
+{% endblock %}

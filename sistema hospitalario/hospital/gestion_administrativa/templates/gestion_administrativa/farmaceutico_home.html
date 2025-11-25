@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+{% load static %}
+{% load custom_filters %}
+
+{% block title %}Panel Farmacéutico{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <!-- TÍTULO -->
+    <h2 class="mb-4 fw-bold text-primary">
+        <i class="bi bi-capsule"></i> Panel Farmacéutico
+    </h2>
+
+    <!-- MENSAJE DE BIENVENIDA -->
+    <div class="alert alert-info">
+        Bienvenido, <strong>{{ usuario.username }}</strong>!
+    </div>
+
+    <!-- BOTÓN CERRAR SESIÓN -->
+    <a href="{% url 'logout' %}" class="btn btn-danger mb-4">
+        <i class="bi bi-box-arrow-right"></i> Cerrar sesión
+    </a>
+
+    <!-- TABLA DE HORARIO -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h5 class="mb-3">Horario del mes: {{ month }}/{{ year }}</h5>
+            <div class="table-responsive">
+                <table class="table table-bordered text-center align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            {% for fecha in fechas_mes %}
+                                <th>{{ fecha|date:"d M" }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            {% for fecha in fechas_mes %}
+                                {% with turno=turnos_mes|dict_get:fecha %}
+                                    <td>
+                                        {{ turno.horario }}
+                                        {% if turno.manual %}
+                                            <br><small>(Manual)</small>
+                                        {% endif %}
+                                    </td>
+                                {% endwith %}
+                            {% endfor %}
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- PANEL DEL FARMACÉUTICO -->
+    <div class="row">
+
+        <!-- ÓRDENES DE DISPENSACIÓN PENDIENTES -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-primary text-white">
+                    <i class="bi bi-journal-medical"></i> Órdenes de Dispensación Pendientes
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        {% for orden in panel_farmaceutico.ordenes_dispensacion %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                {{ orden.paciente }} - {{ orden.medicamento }} ({{ orden.urgencia }})
+                                <div>
+                                    <button class="btn btn-sm btn-success">Preparar</button>
+                                    <button class="btn btn-sm btn-info">Dispensar</button>
+                                </div>
+                            </li>
+                        {% empty %}
+                            <li class="list-group-item text-center">No hay órdenes pendientes</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- ALERTAS DE MEDICAMENTOS -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-warning text-dark">
+                    <i class="bi bi-exclamation-triangle-fill"></i> Alertas de Medicamentos
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        {% for alerta in panel_farmaceutico.alertas_medicamentos %}
+                            <li class="list-group-item">{{ alerta }}</li>
+                        {% empty %}
+                            <li class="list-group-item text-center">No hay alertas</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- CONTROL DE ESTUPEFACIENTES -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-danger text-white">
+                    <i class="bi bi-shield-fill-check"></i> Control de Estupefacientes
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        {% for item in panel_farmaceutico.control_estupefacientes %}
+                            <li class="list-group-item">
+                                {{ item.medicamento }} - Movimientos: {{ item.movimientos }} (Doble firma)
+                            </li>
+                        {% empty %}
+                            <li class="list-group-item text-center">No hay movimientos registrados</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- HISTORIAL DE INTERACCIONES -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-secondary text-white">
+                    <i class="bi bi-patch-exclamation-fill"></i> Historial de Interacciones
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        {% for interaccion in panel_farmaceutico.historial_interacciones %}
+                            <li class="list-group-item">{{ interaccion }}</li>
+                        {% empty %}
+                            <li class="list-group-item text-center">No hay interacciones registradas</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </div> <!-- /row -->
+
+</div>
+{% endblock %}

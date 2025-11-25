@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Editar Cama</h2>
+
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button class="btn btn-primary">Actualizar</button>
+        <a href="{% url 'listar_camas' %}" class="btn btn-secondary">Volver</a>
+    </form>
+</div>
+{% endblock %}

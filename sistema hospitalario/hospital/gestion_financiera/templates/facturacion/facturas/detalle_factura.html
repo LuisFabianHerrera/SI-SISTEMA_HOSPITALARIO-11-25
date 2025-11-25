@@ -1,0 +1,185 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+
+{% block titulo %}
+    {{ titulo }}
+{% endblock titulo %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-lg">
+        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+            <h3 class="mb-0">Factura #{{ factura.id }}</h3>
+            <span class="badge bg-{% if factura.estado == 'PAGADA' %}success{% elif factura.estado == 'PENDIENTE' %}warning{% else %}secondary{% endif %} fs-6">
+                {{ factura.get_estado_display }}
+            </span>
+        </div>
+        <div class="card-body">
+
+            <!-- DATOS GENERALES -->
+            <dl class="row mb-4">
+                <dt class="col-sm-3">Fecha de Emisión:</dt>
+                <dd class="col-sm-9">{{ factura.fecha_emision|date:"Y-m-d H:i" }}</dd>
+
+                <dt class="col-sm-3">Paciente:</dt>
+                <dd class="col-sm-9">
+                    {% if factura.paciente %}
+                        {{ factura.paciente.nombre_completo }}
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </dd>
+                
+                <dt class="col-sm-3">Total:</dt>
+                <dd class="col-sm-9">
+                    <h4 class="text-danger fw-bold">$ {{ factura.total|default:0.00 }}</h4>
+                </dd>
+            </dl>
+
+            <hr>
+
+            <!-- LISTA DE DETALLES DE FACTURA -->
+            <h4>Detalles de la Factura (Ítems)</h4>
+            <div class="table-responsive mb-4">
+                <table class="table table-bordered table-striped">
+                    <thead class="table-secondary">
+                        <tr>
+                            <th>Servicio</th>
+                            <th>Precio Unitario</th>
+                            <th>Cantidad</th>
+                            <th>Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for detalle in detalles %}
+                        <tr>
+                            <td>{{ detalle.servicio.nombre }}</td>
+                            <td>$ {{ detalle.precio_unitario_facturado }}</td>
+                            <td>{{ detalle.cantidad }}</td>
+                            <td class="fw-bold">$ {{ detalle.subtotal }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center">Aún no hay ítems en esta factura.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- FORM PARA AGREGAR ÍTEM -->
+            <h5 class="mt-4">Agregar Ítem</h5>
+            <form method="post" class="row g-3 border p-3 bg-light">
+                {% csrf_token %}
+                <input type="hidden" name="agregar_detalle" value="1">
+
+                <div class="col-md-5">
+                    <label class="form-label">Servicio</label>
+                    <select name="{{ detalle_form.servicio.name }}" id="id_servicio" class="form-select">
+                        <option value="">Seleccione un servicio</option>
+                        {% for servicio in detalle_form.fields.servicio.queryset %}
+                            <option value="{{ servicio.id }}" data-precio="{{ servicio.precio_unitario }}">
+                                {{ servicio.nombre }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Cantidad</label>
+                    {% render_field detalle_form.cantidad class="form-control" id="id_cantidad" %}
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Precio</label>
+                    {% render_field detalle_form.precio_unitario_facturado class="form-control" id="id_precio" readonly="true" %}
+                </div>
+
+                <div class="col-md-1 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">Add</button>
+                </div>
+            </form>
+
+            <hr class="my-5">
+
+            <!-- REGISTRO DE PAGO -->
+            <h4>Registro de Pago</h4>
+            {% if factura.estado == 'PAGADA' %}
+                <div class="alert alert-success mt-3">
+                    Factura pagada. Transacción ID: 
+                    {% if factura.transaccion_pago %}{{ factura.transaccion_pago.id }}{% else %}N/A{% endif %}
+                </div>
+            {% else %}
+                <div class="border p-4 bg-light">
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="registrar_pago" value="1">
+
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Monto (Total)</label>
+                                {% render_field pago_form.monto class="form-control" readonly="true" %}
+                                <p class="form-text text-danger">
+                                    No modifique el monto. Es el total de la factura.
+                                </p>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label">Método de Pago</label>
+                                {% render_field pago_form.metodo_pago class="form-select" %}
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label">Referencia / Cheque / Tarjeta</label>
+                                {% render_field pago_form.referencia class="form-control" %}
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label">Descripción</label>
+                                {% render_field pago_form.descripcion class="form-control" %}
+                            </div>
+
+                            <div class="col-12">
+                               <button type="submit" name="registrar_pago" value="1"
+                                        class="btn btn-success"
+                                        formaction="{% url 'lista_facturas' %}">
+                                    <i class="bi bi-wallet"></i> Confirmar Pago
+                                </button>
+
+
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            {% endif %}
+            
+        </div>
+
+        <div class="card-footer text-muted">
+            <a href="{% url 'lista_facturas' %}" class="btn btn-secondary">Volver al Listado</a>
+        </div>
+    </div>
+</div>
+
+<!-- SCRIPT PARA PRECIO AUTOMÁTICO (corregido) -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const selectServicio = document.getElementById('id_servicio');
+    const inputPrecio = document.getElementById('id_precio');
+
+    function actualizarPrecio() {
+        const opcion = selectServicio.selectedOptions[0];
+
+        if (!opcion || !opcion.dataset.precio) {
+            inputPrecio.value = '';
+            return;
+        }
+
+        const precioUnitario = parseFloat(opcion.dataset.precio);
+        inputPrecio.value = precioUnitario.toFixed(2); // SOLO precio unitario
+    }
+
+    selectServicio.addEventListener('change', actualizarPrecio);
+});
+</script>
+{% endblock content %}

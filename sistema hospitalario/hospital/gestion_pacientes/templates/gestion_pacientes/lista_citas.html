@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Citas de {{ paciente.nombre }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Citas de {{ paciente.nombre }} {{ paciente.apellido_paterno }}</h2>
+
+    <a href="{% url 'agregar_cita' paciente.id %}" class="btn btn-success mb-3">Agregar Nueva Cita</a>
+    <a href="{% url 'lista_pacientes' %}" class="btn btn-secondary mb-3">Volver a Pacientes</a>
+
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Fecha Cita</th>
+                <th>Motivo</th>
+                <th>Estado</th>
+                <th>Fecha Registro</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cita in citas %}
+            <tr>
+                <td>{{ cita.id }}</td>
+                <td>{{ cita.fecha_cita|date:"d/m/Y H:i" }}</td>
+                <td>{{ cita.motivo }}</td>
+                <td>{{ cita.get_estado_display }}</td>
+                <td>{{ cita.fecha_registro|date:"d/m/Y H:i" }}</td>
+                <td>
+                    <a href="{% url 'editar_cita' cita.id %}" class="btn btn-primary btn-sm">Editar</a>
+                    <a href="{% url 'eliminar_cita' cita.id %}" class="btn btn-danger btn-sm" onclick="return confirm('¿Eliminar esta cita?');">Eliminar</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" class="text-center">No hay citas registradas para este paciente.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

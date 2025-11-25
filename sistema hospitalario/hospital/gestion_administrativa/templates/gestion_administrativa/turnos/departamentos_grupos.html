@@ -1,0 +1,20 @@
+{% block content %}
+<h1 class="mb-4">Departamentos y Grupos</h1>
+
+<div class="container">
+  {% for depto in departamentos %}
+    <div class="card mb-3">
+      <div class="card-body">
+        <h4>{{ depto }}</h4>
+        <div class="btn-group mt-2" role="group">
+          {% for grupo in grupos %}
+            <a href="{% url 'calendario_turnos_por_grupo' depto grupo %}" class="btn btn-primary me-2">
+              {{ grupo }}
+            </a>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}

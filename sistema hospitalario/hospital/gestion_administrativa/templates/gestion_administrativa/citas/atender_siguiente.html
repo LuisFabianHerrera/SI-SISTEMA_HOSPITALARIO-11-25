@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Siguiente Paciente{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <h2 class="mb-4 text-primary fw-bold">
+        <i class="bi bi-person-lines-fill"></i> Siguiente Paciente
+    </h2>
+
+    {% if cita %}
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <p><strong>Paciente:</strong> {{ cita.paciente }}</p>
+                <p><strong>Hora programada:</strong> {{ cita.hora }}</p>
+                <p><strong>Número de atención:</strong> {{ cita.numero_atencion }}</p>
+
+                <form method="post" class="mt-3">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-check-circle"></i> Marcar como atendido
+                    </button>
+                </form>
+            </div>
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            No hay pacientes en espera.
+        </div>
+    {% endif %}
+
+    <!-- BOTÓN VOLVER -->
+    {% if cita %}
+        <a href="{% url 'cola_espera' cita.doctor.id %}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left-circle"></i> Volver a la cola
+        </a>
+    {% else %}
+        <a href="{% url 'medico_home' %}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left-circle"></i> Volver al panel
+        </a>
+    {% endif %}
+
+</div>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-4">
+    <h2>Verificación de camas - {{ departamento }}</h2>
+
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+
+    {% if disponible %}
+        <p>Hay {{ camas_disponibles.count }} cama(s) disponible(s).</p>
+        <ul>
+        {% for cama in camas_disponibles %}
+            <li>{{ cama.codigo }} - Habitación {{ cama.habitacion.numero }} ({{ cama.habitacion.tipo }})</li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>No hay camas disponibles.</p>
+
+        <h4>Agregar paciente a lista de espera</h4>
+        <form method="post">
+            {% csrf_token %}
+            <!-- Campo oculto para enviar el departamento -->
+            <input type="hidden" name="departamento" value="{{ departamento }}">
+            <div class="mb-3">
+                <label for="ci" class="form-label">CI del paciente</label>
+                <input type="text" name="ci" class="form-control" id="ci" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Agregar a lista de espera</button>
+        </form>
+    {% endif %}
+
+    <h4 class="mt-4">Lista de espera - {{ departamento }}</h4>
+    <ul>
+        {% for item in lista_espera %}
+            <li>{{ item.paciente.nombre }} - Registrado: {{ item.fecha_registro }}</li>
+        {% empty %}
+            <li>No hay pacientes en espera</li>
+        {% endfor %}
+    </ul>
+
+    <a href="{% url 'listar_camas' %}" class="btn btn-secondary mt-3">← Volver</a>
+</div>
+
+{% endblock %}

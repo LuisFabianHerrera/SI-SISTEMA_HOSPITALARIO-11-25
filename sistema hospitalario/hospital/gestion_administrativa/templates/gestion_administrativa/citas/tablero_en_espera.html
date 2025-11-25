@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Pacientes en Espera{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <!-- TÍTULO -->
+    <h2 class="text-center mb-4 fw-bold text-primary">
+        <i class="bi bi-people-fill"></i> Pacientes en Espera
+    </h2>
+
+    <!-- CAROUSEL -->
+    <div id="carouselPacientes"
+         class="carousel slide mb-4"
+         data-bs-ride="carousel"
+         data-bs-interval="3000">
+
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <img src="{% static 'gestion_administrativa/img/carrusel1.jpg' %}"
+                     class="d-block mx-auto rounded"
+                     style="width:900px;height:400px; object-fit:cover;">
+            </div>
+
+            <div class="carousel-item">
+                <img src="{% static 'gestion_administrativa/img/carrusel2.jpg' %}"
+                     class="d-block mx-auto rounded"
+                     style="width:900px;height:400px; object-fit:cover;">
+            </div>
+
+            <div class="carousel-item">
+                <img src="{% static 'gestion_administrativa/img/carrusel3.jpg' %}"
+                     class="d-block mx-auto rounded"
+                     style="width:900px;height:400px; object-fit:cover;">
+            </div>
+        </div>
+
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselPacientes" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon"></span>
+        </button>
+
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselPacientes" data-bs-slide="next">
+            <span class="carousel-control-next-icon"></span>
+        </button>
+
+        <div class="carousel-indicators">
+            <button type="button" data-bs-target="#carouselPacientes" data-bs-slide-to="0" class="active"></button>
+            <button type="button" data-bs-target="#carouselPacientes" data-bs-slide-to="1"></button>
+            <button type="button" data-bs-target="#carouselPacientes" data-bs-slide-to="2"></button>
+        </div>
+    </div>
+    <!-- FIN CAROUSEL -->
+
+    <!-- TABLA DE ESPERA -->
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-hover text-center align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>N° Atención</th>
+                    <th>Paciente</th>
+                    <th>Doctor</th>
+                    <th>Hora</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cita in en_espera %}
+                <tr>
+                    <td><strong>{{ cita.numero_atencion }}</strong></td>
+                    <td>{{ cita.paciente }}</td>
+                    <td>{{ cita.doctor.nombre }}</td>
+                    <td>{{ cita.hora }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4">No hay pacientes en espera</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<!-- Actualización automática cada 10 segundos -->
+<script>
+    setTimeout(function(){
+        location.reload();
+    }, 10000);
+</script>
+{% endblock %}

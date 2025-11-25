@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+{% load static %}
+{% load custom_filters %}
+
+{% block title %}Panel Enfermero{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <!-- TÍTULO -->
+    <h2 class="mb-4 fw-bold text-success">
+        <i class="bi bi-heart-pulse"></i> Panel Enfermero
+    </h2>
+
+    <!-- MENSAJE DE BIENVENIDA -->
+    <div class="alert alert-info">
+        Bienvenido, <strong>{{ usuario.username }}</strong>!
+    </div>
+
+    <!-- BOTÓN CERRAR SESIÓN -->
+    <a href="{% url 'logout' %}" class="btn btn-danger mb-4">
+        <i class="bi bi-box-arrow-right"></i> Cerrar sesión
+    </a>
+
+    <!-- TABLA DE HORARIO -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h5 class="mb-3">Horario del mes: {{ month }}/{{ year }}</h5>
+            <div class="table-responsive">
+                <table class="table table-bordered text-center align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            {% for fecha in fechas_mes %}
+                                <th>{{ fecha|date:"d M" }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            {% for fecha in fechas_mes %}
+                                {% with turno=turnos_mes|dict_get:fecha %}
+                                    <td>
+                                        {{ turno.horario }}
+                                        {% if turno.manual %}
+                                            <br><small>(Manual)</small>
+                                        {% endif %}
+                                    </td>
+                                {% endwith %}
+                            {% endfor %}
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- PANEL DE ENFERMERO -->
+    <div class="row">
+
+        <!-- UBICACIÓN / TURNO -->
+        <div class="col-md-12 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-info text-white">
+                    <i class="bi bi-geo-alt-fill"></i> Departamento
+                </div>
+                <div class="card-body">
+                    {{ panel_enfermero.departamento }}
+                </div>
+            </div>
+        </div>
+
+
+        <!-- PLAN DE CUIDADOS PENDIENTES -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-primary text-white">
+                    <i class="bi bi-list-check"></i> Plan de Cuidados Pendientes
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        {% for tarea in panel_enfermero.plan_cuidados %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                {{ tarea.hora }} - {{ tarea.paciente }}: {{ tarea.tarea }}
+                                <input type="checkbox" {% if tarea.realizado %}checked{% endif %}>
+                            </li>
+                        {% empty %}
+                            <li class="list-group-item text-center">No hay tareas pendientes</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- ALERTAS DE PACIENTES -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-danger text-white">
+                    <i class="bi bi-exclamation-triangle-fill"></i> Alertas de Pacientes
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        {% for alerta in panel_enfermero.alertas_pacientes %}
+                            <li class="list-group-item">
+                                {{ alerta.paciente }}: {{ alerta.alerta }}
+                            </li>
+                        {% empty %}
+                            <li class="list-group-item text-center">No hay alertas</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- GESTIÓN DE SUMINISTROS -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-warning text-dark">
+                    <i class="bi bi-box-seam"></i> Gestión de Suministros
+                </div>
+                <div class="card-body d-flex flex-wrap gap-2">
+                    {% for suministro in panel_enfermero.gestion_suministros %}
+                        <button class="btn btn-outline-primary">{{ suministro }}</button>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- NOTIFICACIONES -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-secondary text-white">
+                    <i class="bi bi-bell-fill"></i> Notificaciones
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        {% for nota in panel_enfermero.notificaciones %}
+                            <li class="list-group-item">
+                                <strong>{{ nota.de }}:</strong> {{ nota.mensaje }}
+                            </li>
+                        {% empty %}
+                            <li class="list-group-item text-center">No hay notificaciones</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </div> <!-- /row -->
+
+</div>
+{% endblock %}

@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+{% load static %}
+{% load custom_filters %}
+
+{% block title %}Panel Técnico{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <!-- TÍTULO -->
+    <h2 class="mb-4 fw-bold text-warning">
+        <i class="bi bi-tools"></i> Panel Técnico
+    </h2>
+
+    <!-- MENSAJE DE BIENVENIDA -->
+    <div class="alert alert-info">
+        Bienvenido, <strong>{{ usuario.username }}</strong>!
+    </div>
+
+    <!-- BOTÓN CERRAR SESIÓN -->
+    <a href="{% url 'logout' %}" class="btn btn-danger mb-4">
+        <i class="bi bi-box-arrow-right"></i> Cerrar sesión
+    </a>
+
+    <!-- TABLA DE HORARIO -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h5 class="mb-3">Horario del mes: {{ month }}/{{ year }}</h5>
+            <div class="table-responsive">
+                <table class="table table-bordered text-center align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            {% for fecha in fechas_mes %}
+                                <th>{{ fecha|date:"d M" }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            {% for fecha in fechas_mes %}
+                                {% with turno=turnos_mes|dict_get:fecha %}
+                                    <td>
+                                        {{ turno.horario }}
+                                        {% if turno.manual %}
+                                            <br><small>(Manual)</small>
+                                        {% endif %}
+                                    </td>
+                                {% endwith %}
+                            {% endfor %}
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- PANEL DE TÉCNICO -->
+    <div class="row">
+
+        <!-- ÓRDENES DE TRABAJO -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-primary text-white">
+                    <i class="bi bi-card-checklist"></i> Órdenes de Trabajo Actuales
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        {% for orden in panel_tecnico.ordenes_trabajo %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                {{ orden.hora }} - {{ orden.paciente }}: {{ orden.examen }}
+                                <div>
+                                    <button class="btn btn-sm btn-success">Iniciar Proceso</button>
+                                    <button class="btn btn-sm btn-info">Cargar Resultados</button>
+                                </div>
+                            </li>
+                        {% empty %}
+                            <li class="list-group-item text-center">No hay órdenes pendientes</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- ESTADO DEL EQUIPAMIENTO -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-warning text-dark">
+                    <i class="bi bi-hdd-network-fill"></i> Estado del Equipamiento
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        {% for equipo in panel_tecnico.estado_equipos %}
+                            <li class="list-group-item d-flex justify-content-between">
+                                {{ equipo.equipo }}
+                                <span class="badge 
+                                    {% if equipo.estado == 'Disponible' %}bg-success{% elif equipo.estado == 'Mantenimiento' %}bg-danger{% else %}bg-secondary{% endif %}">
+                                    {{ equipo.estado }}
+                                </span>
+                            </li>
+                        {% empty %}
+                            <li class="list-group-item text-center">No hay equipos registrados</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- INVENTARIO DE REACTIVOS/INSUMOS -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-info text-white">
+                    <i class="bi bi-box-seam"></i> Inventario de Reactivos
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        {% for item in panel_tecnico.inventario_reactivos %}
+                            <li class="list-group-item d-flex justify-content-between">
+                                {{ item.reactivo }} - Stock: {{ item.stock }}
+                                {% if item.alerta %}
+                                    <span class="badge bg-danger">Bajo</span>
+                                {% endif %}
+                            </li>
+                        {% empty %}
+                            <li class="list-group-item text-center">Inventario vacío</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- TIEMPOS DE ENTREGA (TAT) -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-secondary text-white">
+                    <i class="bi bi-clock-fill"></i> Tiempos de Entrega (TAT)
+                </div>
+                <div class="card-body">
+                    <ul>
+                        <li>Meta: {{ panel_tecnico.tiempos_entrega.meta }}</li>
+                        <li>Promedio actual: {{ panel_tecnico.tiempos_entrega.promedio_actual }}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </div> <!-- /row -->
+
+</div>
+{% endblock %}

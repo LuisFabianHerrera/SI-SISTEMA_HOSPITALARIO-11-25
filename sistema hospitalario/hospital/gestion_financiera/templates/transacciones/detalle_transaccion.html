@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h2 class="mb-0">{{ titulo }}</h2>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Paciente:</strong> {{ transaccion.paciente.nombre }} {{ transaccion.paciente.apellido }}</p>
+                    <p><strong>Monto Total:</strong> <span class="text-success h4">${{ transaccion.monto|floatformat:2 }}</span></p>
+                    <p><strong>Método de Pago:</strong> {{ transaccion.metodo_pago }}</p>
+                    <p><strong>Referencia:</strong> {{ transaccion.referencia|default:"N/A" }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Fecha de Registro:</strong> {{ transaccion.fecha_transaccion|date:"d/m/Y H:i" }}</p>
+                    <p><strong>Estado:</strong> 
+                        <span class="badge 
+                        {% if transaccion.estado == 'COMPLETADO' %}bg-success
+                        {% elif transaccion.estado == 'PENDIENTE' %}bg-warning
+                        {% else %}bg-danger
+                        {% endif %}">
+                            {{ transaccion.estado }}
+                        </span>
+                    </p>
+                    {% if transaccion.estado == 'PENDIENTE' %}
+                        <p class="mt-3">
+                            <a href="{% url 'procesar_pago' pk=transaccion.pk %}" class="btn btn-primary btn-lg">Marcar como Pagado</a>
+                        </p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="card-footer text-end">
+            <a href="{% url 'lista_transacciones' %}" class="btn btn-secondary">Volver al Listado</a>
+        </div>
+    </div>
+</div>
+{% endblock content %}

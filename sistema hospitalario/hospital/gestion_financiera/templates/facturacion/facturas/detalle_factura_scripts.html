@@ -1,0 +1,54 @@
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Los IDs son los que Django genera automáticamente: id_ + nombre_del_campo
+    const servicioSelect = document.getElementById('id_servicio'); 
+    const precioInput = document.getElementById('id_precio_unitario_facturado'); 
+    
+    // Solo continuar si los elementos clave existen
+    if (!servicioSelect || !precioInput) {
+        return; 
+    }
+
+    // Función que realiza la llamada AJAX al backend
+    function obtenerPrecio(servicioId) {
+        // 1. Validar ID
+        if (!servicioId) {
+            precioInput.value = '0.00';
+            return;
+        }
+
+        // 2. Construir URL de la llamada (usando la URL definida en urls.py)
+        const url = `/facturacion/ajax/obtener-precio/?servicio_id=${servicioId}`; 
+        
+        // 3. Petición Fetch
+        fetch(url)
+        .then(response => {
+            // Manejo de errores HTTP
+            if (!response.ok) {
+                // Si el servidor devuelve un error, lanzamos una excepción
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            // 4. Actualizar el campo de precio con el valor devuelto
+            // parseFloat(data.precio) convierte el string en número.
+            precioInput.value = parseFloat(data.precio).toFixed(2);
+        })
+        .catch(error => {
+            console.error('Error al obtener el precio del servicio:', error);
+            precioInput.value = '0.00'; // Valor por defecto si falla la petición
+        });
+    }
+
+    // 5. Asignar el Listener: Cuando el valor de la lista desplegable cambie
+    servicioSelect.addEventListener('change', function() {
+        obtenerPrecio(this.value);
+    });
+    
+    // Opcional: Si la página se carga con un valor ya seleccionado, obtener el precio inmediatamente
+    if (servicioSelect.value) {
+         obtenerPrecio(servicioSelect.value); 
+    }
+});
+</script>

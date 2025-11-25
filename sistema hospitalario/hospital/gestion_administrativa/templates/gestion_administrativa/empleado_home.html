@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% load static %}
+{% load custom_filters %}
+
+{% block title %}Panel Enfermero{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <!-- TÍTULO -->
+    <h2 class="mb-4 fw-bold text-success">
+        <i class="bi bi-heart-pulse"></i> Panel Enfermero
+    </h2>
+
+    <!-- MENSAJE DE BIENVENIDA -->
+    <div class="alert alert-info">
+        Bienvenido, <strong>{{ usuario.username }}</strong>!
+    </div>
+
+    <!-- BOTÓN CERRAR SESIÓN -->
+    <a href="{% url 'logout' %}" class="btn btn-danger mb-4">
+        <i class="bi bi-box-arrow-right"></i> Cerrar sesión
+    </a>
+
+    <!-- TABLA DE HORARIO -->
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h5 class="mb-3">Horario del mes: {{ month }}/{{ year }}</h5>
+            <div class="table-responsive">
+                <table class="table table-bordered text-center align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            {% for fecha in fechas_mes %}
+                                <th>{{ fecha|date:"d M" }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            {% for fecha in fechas_mes %}
+                                {% with turno=turnos_mes|dict_get:fecha %}
+                                    <td>
+                                        {{ turno.horario }}
+                                        {% if turno.manual %}
+                                            <br><small>(Manual)</small>
+                                        {% endif %}
+                                    </td>
+                                {% endwith %}
+                            {% endfor %}
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

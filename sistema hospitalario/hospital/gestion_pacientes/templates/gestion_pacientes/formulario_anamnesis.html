@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Anamnesis - {{ paciente.nombre }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Registrar Anamnesis de {{ paciente.nombre }}</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-success">Guardar</button>
+        <a href="{% url 'lista_pacientes_anamnesis' %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

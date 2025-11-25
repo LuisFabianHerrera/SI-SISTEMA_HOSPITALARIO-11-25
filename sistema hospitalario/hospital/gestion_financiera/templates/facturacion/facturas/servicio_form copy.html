@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+
+{% block titulo %}
+    {{ titulo }}
+{% endblock titulo %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-info text-white">
+            <h3 class="mb-0">{{ titulo }}</h3>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label for="{{ form.nombre.id_for_label }}" class="form-label">Nombre del Servicio:</label>
+                    {% render_field form.nombre class="form-control" %}
+                    {% for error in form.nombre.errors %}<div class="text-danger">{{ error }}</div>{% endfor %}
+                </div>
+
+                <div class="mb-3">
+                    <label for="{{ form.descripcion.id_for_label }}" class="form-label">Descripción:</label>
+                    {% render_field form.descripcion class="form-control" rows="3" %}
+                    {% for error in form.descripcion.errors %}<div class="text-danger">{{ error }}</div>{% endfor %}
+                </div>
+
+                <div class="mb-3">
+                    <label for="{{ form.precio_base.id_for_label }}" class="form-label">Precio Base ($):</label>
+                    {% render_field form.precio_base class="form-control" %}
+                    {% for error in form.precio_base.errors %}<div class="text-danger">{{ error }}</div>{% endfor %}
+                </div>
+
+                <div class="form-check mb-3">
+                    {% render_field form.requiere_existencia class="form-check-input" %}
+                    <label class="form-check-label" for="{{ form.requiere_existencia.id_for_label }}">
+                        ¿Requiere control de inventario/existencia?
+                    </label>
+                    {% for error in form.requiere_existencia.errors %}<div class="text-danger">{{ error }}</div>{% endfor %}
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <button type="submit" class="btn btn-success"><i class="bi bi-save"></i> Guardar Servicio</button>
+                    <a href="{% url 'lista_servicios_facturables' %}" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock content %}

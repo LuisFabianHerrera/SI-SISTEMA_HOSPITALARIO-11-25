@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+{% load static %}
+{% load custom_filters %}
+
+{% block title %}Panel Médico{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <!-- TÍTULO -->
+    <h2 class="mb-4 fw-bold text-primary">
+        <i class="bi bi-person-badge"></i> Panel Médico
+    </h2>
+
+    <!-- MENSAJE DE BIENVENIDA -->
+    <div class="alert alert-info">
+        Bienvenido, <strong>{{ usuario.username }}</strong>!
+    </div>
+
+    <!-- BOTONES DE ACCESO RÁPIDO -->
+    <div class="mb-4">
+        <a href="{% url 'pacientes_atendidos' usuario.id %}" class="btn btn-primary me-2">
+            <i class="bi bi-people"></i> Pacientes Atendidos
+        </a>
+        <a href="{% url 'cola_espera' doctor_id %}" class="btn btn-warning">
+            <i class="bi bi-list-check"></i> Cola de Espera
+        </a>
+        <a href="{% url 'citas_en_proceso' empleado.id %}" class="btn btn-danger">
+            <i class="bi bi-hourglass-split"></i> Citas en Proceso
+        </a>
+        <a href="{% url 'lista_pacientes' %}" class="btn btn-success">
+            <i class="bi bi-person-plus"></i> Gestión de Pacientes
+        </a>
+
+    </div>
+
+
+    <!-- TABLA DE HORARIO -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+
+            <!-- NAVEGACIÓN DE MESES -->
+            <div class="d-flex justify-content-between mb-3">
+                <a href="?year={{ prev_year }}&month={{ prev_month }}" class="btn btn-secondary">← Mes anterior</a>
+                <h5 class="fw-bold">Horario del mes: {{ month }}/{{ year }}</h5>
+                <a href="?year={{ next_year }}&month={{ next_month }}" class="btn btn-secondary">Mes siguiente →</a>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-bordered text-center align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            {% for fecha in fechas_mes %}
+                                <th class="{% if fecha == dia_actual %}hoy{% endif %}">
+                                    {{ fecha|date:"d M" }}
+                                </th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            {% for fecha in fechas_mes %}
+                                {% with turno=turnos_mes|dict_get:fecha %}
+                                    <td class="{% if fecha == dia_actual %}hoy{% endif %}">
+                                        {{ turno.horario }}
+                                        {% if turno.manual %}<br><small>(Manual)</small>{% endif %}
+                                    </td>
+                                {% endwith %}
+                            {% endfor %}
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .hoy {
+            background-color: #ffecb3 !important;
+            border: 2px solid #ff9800;
+            font-weight: bold;
+        }
+    </style>
+
+
+    <!-- PANEL MÉDICO -->
+    <div class="row">
+
+        <!-- Agenda de Consultas/Citas -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-primary text-white">
+                    <i class="bi bi-calendar-check"></i> Agenda de Consultas/Citas
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        {% for cita in panel_medico.agenda_consultas %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                {{ cita.hora }} - {{ cita.paciente }} 
+                                <div>
+                                    <a href="{% url 'comenzar_cita' cita.id %}" class="btn btn-sm btn-success">
+                                        <i class="bi bi-play-circle"></i> Iniciar Consulta
+                                    </a>
+                                    <a href="{% url 'pacientes_atendidos' usuario.id %}" class="btn btn-sm btn-info">
+                                        <i class="bi bi-people"></i> Ver Historial
+                                    </a>
+                                </div>
+                            </li>
+                        {% empty %}
+                            <li class="list-group-item text-center">No hay citas en espera</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Pacientes Asignados (Hospitalizados) -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-warning text-dark">
+                    <i class="bi bi-people-fill"></i> Pacientes Asignados
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        {% for paciente in panel_medico.pacientes_asignados %}
+                            <li class="list-group-item">
+                                {{ paciente.nombre }} - Habitación: {{ paciente.habitacion }} - Estado: {{ paciente.estado }}
+                            </li>
+                        {% empty %}
+                            <li class="list-group-item text-center">No hay pacientes asignados</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Resultados Pendientes -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-danger text-white">
+                    <i class="bi bi-file-earmark-text"></i> Resultados Pendientes
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        {% for resultado in panel_medico.resultados_pendientes %}
+                            <li class="list-group-item">
+                                {{ resultado.tipo }}: {{ resultado.detalle }}
+                            </li>
+                        {% empty %}
+                            <li class="list-group-item text-center">No hay resultados pendientes</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tareas Rápidas -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-success text-white">
+                    <i class="bi bi-lightning-fill"></i> Tareas Rápidas
+                </div>
+                <div class="card-body d-flex flex-wrap gap-2 align-items-center">
+                    {% for tarea in panel_medico.tareas_rapidas %}
+                        {% if tarea == "Alta Médica" %}
+                            <a href="{% url 'listado_camas_asignadas' %}" 
+                            class="btn btn-outline-primary d-flex align-items-center justify-content-center"
+                            style="height: 40px; min-width: 120px;">
+                                {{ tarea }}
+                            </a>
+                        {% else %}
+                            <button class="btn btn-outline-primary d-flex align-items-center justify-content-center"
+                                    style="height: 40px; min-width: 120px;">
+                                {{ tarea }}
+                            </button>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+</div>
+{% endblock %}

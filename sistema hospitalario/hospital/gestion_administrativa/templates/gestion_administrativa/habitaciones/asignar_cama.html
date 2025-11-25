@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Asignar cama a paciente</h2>
+
+    <!-- Mensajes -->
+    {% for message in messages %}
+        <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}" role="alert">
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <!-- Lista de espera por departamento -->
+        {% if pacientes_espera %}
+            <div class="alert alert-warning">
+                <strong>Pacientes en espera (prioridad para asignación):</strong>
+                <ul>
+                {% for p in pacientes_espera %}
+                    <li>
+                        {{ p.paciente.nombre }} - Registrado: {{ p.fecha_registro }}
+                        {% if forloop.first %}
+                            <!-- Botón para cargar el CI del primero en la lista -->
+                            <button type="button" class="btn btn-sm btn-primary ms-2" 
+                                    onclick="document.getElementById('ci').value='{{ p.paciente.ci }}'">
+                                Cargar CI
+                            </button>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+
+        <!-- CI del paciente -->
+        <div class="mb-3">
+            <label for="ci" class="form-label">CI del Paciente</label>
+            <input type="text" name="ci" id="ci" class="form-control" required>
+        </div>
+
+        <!-- Departamento -->
+        <div class="mb-3">
+            <label for="departamento" class="form-label">Departamento</label>
+            <select name="departamento" id="departamento" class="form-select" required>
+                <option value="">Seleccione...</option>
+                {% for code,label in form.fields.departamento.choices %}
+                    <option value="{{ code }}" {% if departamento == code %}selected{% endif %}>
+                        {{ label }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Habitaciones -->
+        <div class="mb-3">
+            <label for="habitacion" class="form-label">Habitación</label>
+            <select id="habitacion" class="form-select" required>
+                <option value="">Seleccione departamento primero</option>
+            </select>
+        </div>
+
+        <!-- Camas -->
+        <div class="mb-3" id="cama_group" style="display:none;">
+            <label for="cama" class="form-label">Cama</label>
+            <select name="cama_id" id="cama" class="form-select" required>
+                <option value="">Seleccione habitación primero</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Asignar</button>
+        <a href="{% url 'listar_camas' %}" class="btn btn-secondary">← Volver</a>
+    </form>
+</div>
+
+<script>
+let habSelect = document.getElementById("habitacion");
+let camaSelect = document.getElementById("cama");
+let camaGroup = document.getElementById("cama_group");
+
+// Funciones para mostrar/ocultar camas
+function ocultarCama() {
+    camaGroup.style.display = "none";
+    camaSelect.innerHTML = '<option value="">Seleccione habitación primero</option>';
+}
+function mostrarCama() {
+    camaGroup.style.display = "block";
+}
+
+// --- Función para cargar habitaciones ---
+function cargarHabitaciones(dep, habInicial = "") {
+    habSelect.innerHTML = '<option value="">Cargando...</option>';
+    ocultarCama();
+    if (!dep) {
+        habSelect.innerHTML = '<option value="">Seleccione departamento primero</option>';
+        return;
+    }
+
+    fetch(`/ajax/habitaciones/?departamento=${dep}`)
+        .then(r => r.json())
+        .then(data => {
+            if (!data.habitaciones.length) {
+                habSelect.innerHTML = '<option value="">No hay habitaciones</option>';
+                return;
+            }
+            habSelect.innerHTML = '<option value="">Seleccione habitación...</option>';
+            data.habitaciones.forEach(h => {
+                let selected = (h.id == habInicial) ? "selected" : "";
+                habSelect.innerHTML += `<option value="${h.id}" ${selected}>${h.numero} - ${h.camas_disponibles} camas disponibles</option>`;
+            });
+
+            // Si hay una habitación seleccionada, cargar camas automáticamente
+            if (habInicial) {
+                cargarCamas(habInicial);
+            }
+        });
+}
+
+// --- Función para cargar camas ---
+function cargarCamas(habitacion_id, camaInicial = "") {
+    ocultarCama();
+    if (!habitacion_id) return;
+    fetch(`/ajax/camas/?habitacion_id=${habitacion_id}`)
+        .then(r => r.json())
+        .then(data => {
+            if (!data.camas.length) {
+                camaSelect.innerHTML = '<option value="">No hay camas disponibles</option>';
+                mostrarCama();
+                return;
+            }
+            camaSelect.innerHTML = '<option value="">Seleccione cama...</option>';
+            data.camas.forEach(c => {
+                let selected = (c.id == camaInicial) ? "selected" : "";
+                camaSelect.innerHTML += `<option value="${c.id}" ${selected}>${c.codigo}</option>`;
+            });
+            mostrarCama();
+        });
+}
+
+// --- Evento al cambiar departamento ---
+document.getElementById("departamento").onchange = function () {
+    let dep = this.value;
+    cargarHabitaciones(dep);
+};
+
+// --- Evento al cambiar habitación ---
+habSelect.onchange = function () {
+    let id = this.value;
+    cargarCamas(id);
+};
+
+// --- Cargar automáticamente si ya hay departamento en la URL ---
+document.addEventListener("DOMContentLoaded", function() {
+    let dep = "{{ departamento }}";
+    if (dep) {
+        cargarHabitaciones(dep);
+    }
+});
+</script>
+{% endblock %}

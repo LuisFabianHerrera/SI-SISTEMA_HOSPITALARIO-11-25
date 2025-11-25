@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Diagnósticos - {{ paciente.nombre }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Diagnósticos de {{ paciente.nombre }} {{ paciente.apellido_paterno }}</h2>
+    <a href="{% url 'agregar_diagnostico' paciente.id %}" class="btn btn-success mb-3">Agregar Diagnóstico</a>
+    <a href="{% url 'lista_pacientes' %}" class="btn btn-secondary mb-3">Volver a Pacientes</a>
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Descripción</th>
+                <th>Especialidad</th>
+                <th>Tratamiento</th>
+                <th>Fecha Inicio</th>
+                <th>Fecha Fin</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for diag in diagnosticos %}
+            <tr>
+                <td>{{ diag.descripcion }}</td>
+                <td>{{ diag.especialidad }}</td>
+                <td>{{ diag.tratamiento }}</td>
+                <td>{{ diag.fecha_inicio }}</td>
+                <td>{{ diag.fecha_fin }}</td>
+                <td>
+                    <a href="{% url 'editar_diagnostico' diag.id %}" class="btn btn-warning btn-sm">Editar</a>
+                    <a href="{% url 'eliminar_diagnostico' diag.id %}" class="btn btn-danger btn-sm" onclick="return confirm('¿Eliminar diagnóstico?')">Eliminar</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" class="text-center">No hay diagnósticos registrados.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

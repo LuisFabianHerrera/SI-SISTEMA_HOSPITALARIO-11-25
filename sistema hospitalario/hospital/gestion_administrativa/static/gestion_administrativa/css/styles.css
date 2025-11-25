@@ -1,0 +1,80 @@
+/* Colores hospitalarios */
+body {
+    background-color: #f2f7fa;
+    color: #333333;
+    font-family: Arial, sans-serif;
+}
+
+h1, h2, h3 {
+    color: #007bff;
+}
+
+button.btn-success {
+    background-color: #28a745;
+    border: none;
+    transition: 0.3s;
+}
+
+button.btn-success:hover {
+    background-color: #218838;
+}
+
+/* Espaciado y bordes */
+.container {
+    margin-top: 20px;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+table, th, td {
+    border: 1px solid #d1d7dc;
+}
+
+/* === Estilos para botones === */
+.btn-main {
+    border: 2px solid #0d6efd !important;
+    border-radius: 6px;
+    background-color: transparent !important;
+    color: #0d6efd !important;
+    transition: 0.3s;
+}
+.btn-main:hover {
+    background-color: #0d6efd !important;
+    color: #fff !important;
+}
+
+.btn-green {
+    border: 2px solid #198754 !important;
+    border-radius: 6px;
+    background-color: transparent !important;
+    color: #198754 !important;
+    transition: 0.3s;
+}
+.btn-green:hover {
+    background-color: #198754 !important;
+    color: #fff !important;
+}
+
+.btn-logout {
+    border: 2px solid #dc3545 !important;
+    border-radius: 6px;
+    background-color: transparent !important;
+    color: #dc3545 !important;
+    transition: 0.3s;
+}
+.btn-logout:hover {
+    background-color: #dc3545 !important;
+    color: #fff !important;
+}
+
+/* === Estilos añadidos de la plantilla: tarjetas KPIs === */
+.card-kpi {
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card-kpi:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15) !important;
+}

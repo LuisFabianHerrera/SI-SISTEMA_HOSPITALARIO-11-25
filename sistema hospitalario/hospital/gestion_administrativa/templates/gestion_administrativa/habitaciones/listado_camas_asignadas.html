@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Camas Asignadas</h2>
+
+<!-- Botón para volver al listado de camas -->
+<a href="{% url 'listar_camas' %}" class="btn btn-secondary mb-3">
+    ← Volver 
+</a>
+
+
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Paciente</th>
+            <th>Cama</th>
+            <th>Habitación</th>
+            <th>Ingreso</th>
+            <th>Salida</th>
+            <th>Acción</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        {% for asignacion in asignaciones %}
+        <tr>
+            <td>{{ asignacion.paciente.nombre }}</td>
+            <td>{{ asignacion.cama.codigo }}</td>
+            <td>{{ asignacion.cama.habitacion.numero }}</td>
+            <td>{{ asignacion.fecha_ingreso }}</td>
+            <td>{{ asignacion.fecha_salida|default:"-" }}</td>
+            <td>
+                {% if asignacion.cama.estado == "ocupada" %}
+                <a class="btn btn-warning"
+                   href="{% url 'liberar_cama' asignacion.id %}">
+                   Liberar
+                </a>
+                {% elif asignacion.cama.estado == "limpieza" %}
+                <a class="btn btn-success"
+                   href="{% url 'confirmar_limpieza' asignacion.cama.id %}">
+                   Confirmar limpieza
+                </a>
+                {% else %}
+                Disponible
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+
+    </tbody>
+</table>
+
+{% endblock %}

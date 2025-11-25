@@ -1,0 +1,195 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Panel Administrador{% endblock %}
+
+{% block extra_head %}
+    <!-- Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Chart.js para gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+    <style>
+        .card-kpi {
+            transition: transform 0.2s;
+        }
+        .card-kpi:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15) !important;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- ======== TÍTULO GENERAL ======== -->
+    <header class="mb-4 text-center">
+        <h1 class="display-5 text-primary">
+            <i class="fas fa-tachometer-alt me-2"></i> {{ titulo|default:"Panel Administrador" }}
+        </h1>
+        <p class="lead text-muted">Bienvenido, {{ usuario.username }}!</p>
+        <hr>
+    </header>
+
+    <!-- ======== KPIs ======== -->
+    <div class="row">
+        {% for kpi in kpis %}
+        <div class="col-md-3 mb-4">
+            {% if kpi.nombre == 'Pacientes Registrados' %}{% with icon='fas fa-users' %}{% endwith %}
+            {% elif kpi.nombre == 'Doctores en Plantilla' %}{% with icon='fas fa-user-tie' %}{% endwith %}
+            {% elif kpi.nombre == 'Citas Pendientes (GLOBAL)' %}{% with icon='fas fa-calendar-times' %}{% endwith %}
+            {% elif kpi.nombre == 'Ingresos Acumulados' %}{% with icon='fas fa-wallet' %}{% endwith %}
+            {% else %}{% with icon='fas fa-chart-line' %}{% endwith %}
+            {% endif %}
+
+            <div class="card text-white {{ kpi.color }} card-kpi shadow">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title text-uppercase">{{ kpi.nombre }}</h6>
+                            <p class="card-text">
+                                <span class="fs-1 fw-bold">{{ kpi.valor }}</span>
+                                <span class="fs-6">{{ kpi.unidad }}</span>
+                            </p>
+                        </div>
+                        <i class="{{ icon }} fa-3x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <hr class="mt-4">
+
+    <!-- ======== GRÁFICOS ======== -->
+    <div class="row mt-4">
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-header bg-light fw-bold text-center">Tendencia de Ingresos</div>
+                <div class="card-body">
+                    <canvas id="ingresosChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-header bg-light fw-bold text-center">Productividad Médica</div>
+                <div class="card-body">
+                    <canvas id="desempenoChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr class="mt-4">
+
+    <!-- ======== ESTADÍSTICAS ADMIN ======== -->
+    <div class="row mt-4 g-3 text-center">
+        <div class="col-md-3">
+            <div class="card p-3 shadow-sm">
+                <h5 class="text-primary">Total Empleados</h5>
+                <p class="display-6">{{ total_empleados }}</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card p-3 shadow-sm">
+                <h5 class="text-primary">Citas Hoy</h5>
+                <p class="display-6">{{ citas_hoy }}</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card p-3 shadow-sm">
+                <h5 class="text-primary">Pacientes en Espera</h5>
+                <p class="display-6">{{ pacientes_espera }}</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card p-3 shadow-sm">
+                <h5 class="text-primary">Turnos Programados</h5>
+                <p class="display-6">{{ turnos_programados }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======== ACCIONES RÁPIDAS ======== -->
+    <h3 class="section-title mt-5 mb-3 text-center text-primary">Acciones rápidas</h3>
+    <div class="d-flex flex-wrap justify-content-center gap-3 mb-4">
+        <a href="{% url 'lista_empleados' %}" class="btn btn-main py-2 px-4">Gestionar Empleados</a>
+        <a href="{% url 'lista_turnos' %}" class="btn btn-main py-2 px-4">Gestionar Turnos</a>
+        <a href="{% url 'lista_citas' %}" class="btn btn-main py-2 px-4">Gestionar Citas</a>
+        <a href="{% url 'tablero_en_espera' %}" class="btn btn-main py-2 px-4">Tablero de Espera</a>
+        <a href="{% url 'listar_habitaciones' %}" class="btn btn-main py-2 px-4">Gestionar Habitaciones</a>
+    </div>
+
+    <!-- ======== ÚLTIMAS CITAS ======== -->
+    <h3 class="section-title mt-4 mb-3 text-center text-primary">Últimas Citas</h3>
+    {% if ultimas_citas %}
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered text-center">
+            <thead class="table-dark">
+                <tr>
+                    <th>Paciente</th>
+                    <th>Doctor</th>
+                    <th>Fecha</th>
+                    <th>Hora</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for c in ultimas_citas %}
+                <tr>
+                    <td>{{ c.paciente }}</td>
+                    <td>{{ c.doctor.nombre }}</td>
+                    <td>{{ c.fecha }}</td>
+                    <td>{{ c.hora }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="text-center">No hay citas recientes.</p>
+    {% endif %}
+
+    <!-- CERRAR SESIÓN -->
+    <div class="mt-5 text-center">
+        <a href="{% url 'logout' %}" class="btn btn-danger"><i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión</a>
+    </div>
+</div>
+{% endblock content %}
+
+{% block extra_js %}
+    {{ datos_ingresos|json_script:"datos-ingresos-json" }}
+    {{ datos_desempeno|json_script:"datos-desempeno-json" }}
+
+    <script>
+        // Gráfico de Ingresos
+        (function() {
+            const dataScript = document.getElementById('datos-ingresos-json');
+            if (!dataScript) return;
+            const datos = JSON.parse(dataScript.textContent);
+            const labels = datos.map(d => d.mes);
+            const montos = datos.map(d => d.monto);
+            const ctx = document.getElementById('ingresosChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: { labels, datasets: [{ label:'Ingresos', data:montos, borderColor:'rgba(54,162,235,1)', backgroundColor:'rgba(54,162,235,0.2)', tension:0.3, fill:true }] },
+                options: { responsive:true, scales:{y:{beginAtZero:true}}, plugins:{legend:{display:false}} }
+            });
+        })();
+
+        // Gráfico de Desempeño
+        (function() {
+            const dataScript = document.getElementById('datos-desempeno-json');
+            if (!dataScript) return;
+            const datos = JSON.parse(dataScript.textContent);
+            const labels = datos.map(d => d.doctor);
+            const citas = datos.map(d => d.citas_atendidas);
+            const ctx = document.getElementById('desempenoChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: { labels, datasets:[{ label:'Citas Atendidas', data:citas, backgroundColor:'rgba(75,192,192,0.7)', borderWidth:1 }] },
+                options: { responsive:true, indexAxis:'y', scales:{x:{beginAtZero:true}}, plugins:{legend:{display:false}} }
+            });
+        })();
+    </script>
+{% endblock extra_js %}

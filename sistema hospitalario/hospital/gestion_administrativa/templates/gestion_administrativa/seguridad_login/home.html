@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Home Hospital</title>
+</head>
+<body>
+    <h2>Bienvenido, {{ usuario.username }}</h2>
+    <p>Cargo: {{ usuario.cargo }}</p>
+    <a href="{% url 'logout' %}">Cerrar sesión</a>
+</body>
+</html>

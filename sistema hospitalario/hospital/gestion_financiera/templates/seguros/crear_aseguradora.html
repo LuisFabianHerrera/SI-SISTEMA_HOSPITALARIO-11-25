@@ -1,0 +1,30 @@
+{% extends "base.html" %} 
+{% load widget_tweaks %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>{{ titulo }}</h1>
+    <p>Utilice el siguiente formulario para registrar una nueva aseguradora.</p>
+    
+    <div class="card shadow-sm mt-3">
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                
+                {% for field in form %}
+                    <div class="mb-3">
+                        <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                        {{ field|add_class:"form-control" }}
+                        {% for error in field.errors %}
+                            <small class="text-danger">{{ error }}</small>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+                
+                <button type="submit" class="btn btn-success">Guardar Aseguradora</button>
+                <a href="{% url 'lista_aseguradoras' %}" class="btn btn-secondary">Cancelar</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock content %}

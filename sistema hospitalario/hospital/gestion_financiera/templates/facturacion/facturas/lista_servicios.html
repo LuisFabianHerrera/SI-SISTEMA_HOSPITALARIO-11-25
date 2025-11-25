@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block titulo %}
+    {{ titulo }}
+{% endblock titulo %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>{{ titulo }}</h2>
+        {# ✅ BOTÓN DE CREAR SERVICIO: Usa la URL correcta #}
+        <a href="{% url 'crear_servicio_facturable' %}" class="btn btn-success">
+            <i class="fas fa-plus"></i> Crear Nuevo Servicio
+        </a>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    {% if servicios %}
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <table class="table table-striped table-hover">
+                <thead class="bg-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Precio Base</th>
+                        <th>Descripción</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for servicio in servicios %}
+                    <tr>
+                        <td>{{ servicio.pk }}</td>
+                        <td>{{ servicio.nombre }}</td>
+                        <td>${{ servicio.precio_base|floatformat:2 }}</td>
+                        <td>{{ servicio.descripcion|default:"N/A" }}</td>
+                        <td>
+                            <a href="#" class="btn btn-sm btn-info text-white me-2" title="Editar">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            {# 🗑️ BOTÓN DE ELIMINAR: Usa la URL 'eliminar_servicio_facturable' #}
+                            <a href="{% url 'eliminar_servicio_facturable' pk=servicio.pk %}" class="btn btn-sm btn-danger" title="Eliminar">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% else %}
+        <div class="alert alert-info">
+            No se han encontrado servicios facturables. ¡Crea uno ahora!
+        </div>
+    {% endif %}
+</div>
+{% endblock content %}

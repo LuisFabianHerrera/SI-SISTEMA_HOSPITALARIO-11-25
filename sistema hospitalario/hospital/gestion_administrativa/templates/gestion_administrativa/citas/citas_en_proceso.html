@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Citas en Proceso{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4 text-primary fw-bold"><i class="bi bi-hourglass-split"></i> Citas en Proceso</h2>
+    <div class="mb-3">
+        <a href="{% url 'medico_home' %}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left-circle"></i> Volver
+        </a>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped align-middle text-center">
+            <thead class="table-dark">
+                <tr>
+                    <th>N° Atención</th>
+                    <th>Paciente</th>
+                    <th>Hora</th>
+                    <th>Prioridad</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cita in citas %}
+                    <tr>
+                        <td>{{ cita.numero_atencion }}</td>
+                        <td>{{ cita.paciente }}</td>
+                        <td>{{ cita.hora }}</td>
+                        <td>
+                            {% if cita.prioridad == "Alta" %}
+                                <span class="badge bg-danger">{{ cita.prioridad }}</span>
+                            {% elif cita.prioridad == "Media" %}
+                                <span class="badge bg-warning text-dark">{{ cita.prioridad }}</span>
+                            {% else %}
+                                <span class="badge bg-info text-dark">{{ cita.prioridad }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'atender_siguiente' cita.doctor.id %}" class="btn btn-success btn-sm">
+                                <i class="bi bi-check-circle"></i> Marcar atendida
+                            </a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center">No hay citas en proceso</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

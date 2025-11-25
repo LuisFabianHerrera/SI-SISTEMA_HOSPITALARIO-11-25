@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Empleados{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <!-- TÍTULO -->
+    <h1 class="mb-4 text-primary fw-bold">
+        <i class="bi bi-people"></i> Lista de Empleados por Departamento
+    </h1>
+
+    <!-- BOTONES DE ACCIÓN -->
+    <div class="d-flex gap-2 mb-3">
+        <a href="{% url 'registrar_empleado' %}" class="btn btn-success">
+            <i class="bi bi-person-plus"></i> Registrar Nuevo Empleado
+        </a>
+        <a href="{% url 'dashboard_std' %}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left-circle"></i> Volver
+        </a>
+    </div>
+
+    <!-- LISTA POR DEPARTAMENTOS -->
+    {% for nombre_departamento, empleados in departamentos.items %}
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header bg-primary text-white fw-bold">
+                <i class="bi bi-building"></i> {{ nombre_departamento }}
+            </div>
+
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>#</th>
+                            <th>Nombre</th>
+                            <th>Cargo</th>
+                            <th>Teléfono</th>
+                            <th>Estado</th>
+                            <th class="text-center">Acciones</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for empleado in empleados %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ empleado.nombre }}</td>
+                            <td>{{ empleado.get_cargo_display }}</td>
+                            <td>{{ empleado.telefono|default:"-" }}</td>
+                            <td>{{ empleado.get_estado_display }}</td>
+                            <td class="text-center">
+                                <a href="{% url 'editar_empleado' empleado.id %}" class="btn btn-sm btn-outline-primary me-1">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                                <a href="{% url 'eliminar_empleado' empleado.id %}"
+                                   class="btn btn-sm btn-outline-danger"
+                                   onclick="return confirm('¿Estás seguro de que deseas eliminar este empleado?');">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% empty %}
+        <div class="alert alert-warning text-center">
+            No hay empleados registrados.
+        </div>
+    {% endfor %}
+
+</div>
+{% endblock %}

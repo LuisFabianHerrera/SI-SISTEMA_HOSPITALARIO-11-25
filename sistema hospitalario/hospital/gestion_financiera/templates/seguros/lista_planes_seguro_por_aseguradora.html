@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+    {{ titulo }}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-list-alt me-2"></i>{{ titulo }}</h2>
+        
+        {# Botón para crear un nuevo Plan de Seguro #}
+        <a href="{% if aseguradora %}{% url 'crear_plan_seguro_con_aseguradora' aseguradora.id %}{% else %}{% url 'crear_plan_seguro' %}{% endif %}" 
+           class="btn btn-sm btn-success">
+            Nuevo Plan
+        </a>
+    </div>
+
+    {% if planes %}
+        <div class="table-responsive">
+            <table class="table table-striped table-hover shadow-sm">
+                <thead class="bg-info text-white">
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre del Plan</th>
+                        <th>Aseguradora</th>
+                        <th>Deducible</th>
+                        <th>Cobertura (%)</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for plan in planes %}
+                    <tr>
+                        <td>{{ plan.id }}</td>
+                        <td><strong>{{ plan.nombre_plan }}</strong></td>
+                        <td>{{ plan.aseguradora.nombre }}</td>
+                        <td>${{ plan.deducible|floatformat:2 }}</td>
+                        <td>{{ plan.cobertura_porcentaje }}%</td>
+                        <td>
+                            <a href="{% url 'editar_plan_seguro' pk=plan.pk %}" class="btn btn-sm btn-outline-info" title="Editar">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="{% url 'eliminar_plan_seguro' pk=plan.pk %}" class="btn btn-sm btn-outline-danger" title="Eliminar">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info" role="alert">
+            No hay planes de seguro registrados. ¡Comienza por agregar uno!
+        </div>
+    {% endif %}
+</div>
+{% endblock content %}

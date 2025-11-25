@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Pacientes - Anamnesis{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Pacientes - Anamnesis</h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-success">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Apellido Paterno</th>
+                <th>Apellido Materno</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for paciente in pacientes %}
+            <tr>
+                <td>{{ paciente.id }}</td>
+                <td>{{ paciente.nombre }}</td>
+                <td>{{ paciente.apellido_paterno }}</td>
+                <td>{{ paciente.apellido_materno }}</td>
+                <td>
+                    <!-- Botón para registrar nueva anamnesis -->
+                    <a href="{% url 'agregar_anamnesis' paciente.id %}" class="btn btn-warning btn-sm">
+                        Registrar Anamnesis
+                    </a>
+                    <!-- Botón para ver las anamnesis existentes -->
+                    <a href="{% url 'lista_anamnesis' paciente.id %}" class="btn btn-info btn-sm">
+                        Ver Anamnesis
+                    </a>
+                     <a href="{% url 'lista_pacientes' %}" class="btn btn-info btn-sm">
+                        Volver a pacientes
+                    </a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="text-center">No hay pacientes registrados.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

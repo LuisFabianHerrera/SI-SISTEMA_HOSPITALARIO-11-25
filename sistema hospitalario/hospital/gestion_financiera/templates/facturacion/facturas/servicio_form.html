@@ -1,0 +1,32 @@
+
+{% extends "base.html" %}
+{% load widget_tweaks %}
+
+{% block titulo %}
+    {{ titulo }}
+{% endblock titulo %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-info text-white">
+            <h3 class="mb-0">{{ titulo }}</h3>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+<form method="post">
+    {% csrf_token %} 
+    
+    {{ form.as_p }}
+    
+
+                <div class="d-flex justify-content-between">
+                    <button type="submit" class="btn btn-success"><i class="bi bi-save"></i> Guardar Servicio</button>
+                    <a href="{% url 'lista_servicios_facturables' %}" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock content %}

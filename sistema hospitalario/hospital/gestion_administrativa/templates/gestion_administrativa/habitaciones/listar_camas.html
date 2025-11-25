@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Listado de Camas</h2>
+    <a href="{% url 'listar_habitaciones' %}" class="btn btn-secondary mb-3">← Volver</a>
+    <a href="{% url 'registrar_cama' %}" class="btn btn-primary mb-3">Registrar Cama</a>
+    <a href="{% url 'listado_camas_asignadas' %}" class="btn btn-primary mb-3">Camas Asignadas</a>
+
+    {% regroup camas by habitacion.departamento as departamentos %}
+
+    {% for dep in departamentos %}
+        <h4 class="mt-4">{{ dep.grouper }}</h4>
+
+        <!-- Botón para verificar camas disponibles en este departamento -->
+        <a href="{% url 'verificar_camas_disponibles' %}?departamento={{ dep.grouper }}" 
+           class="btn btn-danger mb-2">
+           Verificar camas disponibles
+        </a>
+        <a href="{% url 'asignar_cama' %}?departamento={{ dep.grouper }}" 
+           class="btn btn-danger mb-2">
+           Asignar cama a paciente
+        </a>
+        <table class="table table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    <th>Código</th>
+                    <th>Habitación</th>
+                    <th>Tipo</th>
+                    <th>Estado</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for c in dep.list %}
+                <tr>
+                    <td>{{ c.codigo }}</td>
+                    <td>{{ c.habitacion.numero }}</td>
+                    <td>{{ c.habitacion.tipo }}</td>
+                    <td>{{ c.get_estado_display }}</td>
+                    <td>
+                        <a href="{% url 'editar_cama' c.id %}" class="btn btn-warning btn-sm">
+                            Editar
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5">No hay camas</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endfor %}
+</div>
+{% endblock %}

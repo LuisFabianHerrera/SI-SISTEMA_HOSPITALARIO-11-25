@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Editar Habitación{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <!-- TÍTULO -->
+    <h2 class="mb-4 fw-bold text-primary">
+        <i class="bi bi-house-door-fill"></i> {% if habitacion %}Editar Habitación{% else %}Registrar Habitación{% endif %}
+    </h2>
+
+    <!-- FORMULARIO EN CARD -->
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <form method="post" class="row g-3">
+                {% csrf_token %}
+
+                <div class="col-md-6">
+                    <label for="departamento" class="form-label">Departamento</label>
+                    {{ form.departamento }}
+                </div>
+
+                <div class="col-md-6">
+                    <label for="tipo" class="form-label">Tipo</label>
+                    {{ form.tipo }}
+                </div>
+
+                <div class="col-md-6">
+                    <label for="capacidad" class="form-label">Capacidad</label>
+                    {{ form.capacidad }}
+                </div>
+
+                <div class="col-md-6">
+                    <label for="estado" class="form-label">Estado</label>
+                    {{ form.estado }}
+                </div>
+
+                <div class="col-12 mt-3 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save"></i> Guardar
+                    </button>
+                    <a href="{% url 'listar_habitaciones' %}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left-circle"></i> Volver
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- SCRIPT PARA ACTUALIZAR TIPOS SEGÚN DEPARTAMENTO -->
+<script>
+    const tiposPorDepartamento = {{ TIPOS_POR_DEPARTAMENTO|safe }};
+
+    const departamentoSelect = document.getElementById("departamento");
+    const tipoSelect = document.getElementById("tipo");
+
+    function actualizarTipos() {
+        const departamento = departamentoSelect.value;
+        const tipos = tiposPorDepartamento[departamento] || [];
+
+        tipoSelect.innerHTML = ''; // Limpiar opciones previas
+
+        tipos.forEach(function(tipo) {
+            const option = document.createElement('option');
+            option.value = tipo;
+            option.text = tipo;
+            tipoSelect.appendChild(option);
+        });
+
+        // Seleccionar automáticamente el tipo actual
+        const tipoActual = "{{ habitacion.tipo|default_if_none:'' }}";
+        if (tipoActual) tipoSelect.value = tipoActual;
+    }
+
+    departamentoSelect.addEventListener('change', actualizarTipos);
+    window.addEventListener('load', actualizarTipos);
+</script>
+{% endblock %}

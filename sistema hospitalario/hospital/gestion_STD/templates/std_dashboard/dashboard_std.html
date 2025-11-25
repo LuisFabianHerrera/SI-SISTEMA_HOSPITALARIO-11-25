@@ -1,0 +1,231 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_head %}
+    <!-- Font Awesome para iconos de estética -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Se mantiene Chart.js para los gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+    <style>
+        .card-kpi {
+            transition: transform 0.2s;
+        }
+        .card-kpi:hover {
+            transform: scale(1.02); /* Escala ligeramente menor para ser menos intrusivo */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15) !important;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <header class="mb-4">
+        <!-- Título principal con icono de velocímetro -->
+        <h1 class="display-5 text-primary">
+            <i class="fas fa-user-shield me-2"></i> {{ titulo }}
+        </h1>
+        
+        <p >BIENVENIDO, {{ request.user.username }}
+        {% if empleado and empleado.es_doctor %}
+            <span class="badge bg-warning text-dark ms-2"><i class="fas fa-user-md me-1"></i> Rol Dual: Doctor</span>
+        {% endif %}
+        </p>
+        <hr>
+    </header>
+    
+    <!-- 1. Indicadores Clave de Desempeño (KPIs) -->
+    <div class="row">
+        {% for kpi in kpis %}
+        <div class="col-md-3 mb-4">
+            <!-- Lógica de Iconos para cada KPI -->
+            {% if kpi.nombre == 'Pacientes Registrados' %}{% with icon='fas fa-users' %}{% endwith %}
+            {% elif kpi.nombre == 'Doctores en Plantilla' %}{% with icon='fas fa-user-tie' %}{% endwith %}
+            {# 🛑 CORRECCIÓN: Se cambió '%{%' por '%}{%' para cerrar el elif y abrir el with #}
+            {% elif kpi.nombre == 'Citas Pendientes (GLOBAL)' %}{% with icon='fas fa-calendar-times' %}{% endwith %}
+            {% elif kpi.nombre == 'Ingresos Acumulados' %}{% with icon='fas fa-wallet' %}{% endwith %}
+            {% else %}{% with icon='fas fa-chart-line' %}{% endwith %}
+            {% endif %}
+            
+            <div class="card text-white {{ kpi.color }} card-kpi shadow">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title text-uppercase">{{ kpi.nombre }}</h6>
+                            <p class="card-text">
+                                <span class="fs-1 fw-bold">{{ kpi.valor }}</span>
+                                <span class="fs-6">{{ kpi.unidad }}</span>
+                            </p>
+                        </div>
+                        <i class="{{ icon }} fa-3x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <hr class="mt-4">
+
+    <!-- 2. Gráficos de Resumen (Observación Rápida) -->
+    <h2 class="text-secondary mt-5"><i class="fas fa-chart-area me-2"></i> Resumen de Tendencias</h2>
+    <div class="row mt-4">
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-header bg-light fw-bold text-center">Tendencia de Ingresos (Observación Financiera)</div>
+                <div class="card-body">
+                    <canvas id="ingresosChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-header bg-light fw-bold text-center">Productividad Médica (Gestión de Recursos)</div>
+                <div class="card-body">
+                    <canvas id="desempenoChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+        <h3 class="section-title mt-5 mb-3 text-center text-primary">Acciones rápidas</h3>
+        
+        <div class="d-flex flex-wrap justify-content-center gap-3 mb-4">
+            <a href="{% url 'lista_empleados' %}" class="btn btn-primary py-2 px-4">
+                <i class="bi bi-people-fill"></i> Gestionar Empleados
+            </a>
+
+            <a href="{% url 'lista_turnos' %}" class="btn btn-secondary py-2 px-4">
+                <i class="bi bi-calendar2-week"></i> Gestionar Turnos
+            </a>
+
+            <a href="{% url 'lista_citas' %}" class="btn btn-success py-2 px-4">
+                <i class="bi bi-journal-check"></i> Gestionar Citas
+            </a>
+
+            <a href="{% url 'tablero_en_espera' %}" class="btn btn-info text-white py-2 px-4">
+                <i class="bi bi-clock-history"></i> Tablero de Espera
+            </a>
+
+            <a href="{% url 'listar_habitaciones' %}" class="btn btn-warning py-2 px-4">
+                <i class="bi bi-building"></i> Gestionar Habitaciones
+            </a>
+        </div>
+
+    <hr class="mt-4">
+    
+    <!-- 3. Enlaces a Reportes Estratégicos -->
+    <h2 class="text-secondary mt-5"><i class="fas fa-link me-2"></i> Profundizar en el Análisis</h2>
+    <div class="row">
+        
+        <div class="col-md-4 mb-4">
+            <div class="card bg-light border-success shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-hand-holding-usd text-success me-2"></i> Reporte Mensual de Facturación</h5>
+                    <p class="card-text small">Detalle completo de ingresos para auditoría y planificación financiera.</p>
+                    <a href="{% url 'reporte_financiero' %}" class="btn btn-success btn-sm w-100">Analizar Financiero →</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card bg-light border-info shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-users-cog text-info me-2"></i> Reporte de Desempeño Médico</h5>
+                    <p class="card-text small">Herramienta para evaluar y optimizar la plantilla médica y la calidad de atención.</p>
+                    <a href="{% url 'reporte_desempeno' %}" class="btn btn-info text-white btn-sm w-100">Analizar Desempeño →</a>
+                </div>
+            </div>
+        </div>
+        
+        {% if empleado and empleado.es_doctor %}
+        <div class="col-md-4 mb-4">
+            <div class="card bg-light border-warning shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-clipboard-list text-warning me-2"></i> Mi Reporte de Citas</h5>
+                    <p class="card-text small">Gestión operacional personal para citas pendientes y seguimiento.</p>
+                    <a href="{% url 'reportes_doctor' %}" class="btn btn-warning text-dark btn-sm w-100">Ir a mis Citas →</a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+    </div>
+    
+    <div class="mt-5 text-end">
+        <a href="{% url 'logout' %}" class="btn btn-danger"><i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión</a>
+    </div>
+</div>
+
+{% endblock content %}
+
+{% block extra_js %}
+    {{ datos_ingresos|json_script:"datos-ingresos-json" }}
+    {{ datos_desempeno|json_script:"datos-desempeno-json" }}
+
+    <script>
+        // Gráfico de Ingresos (Tendencia)
+        (function() {
+            const dataScript = document.getElementById('datos-ingresos-json');
+            if (!dataScript) return;
+
+            const datos = JSON.parse(dataScript.textContent);
+            const labels = datos.map(d => d.mes);
+            const montos = datos.map(d => d.monto);
+
+            const ctx = document.getElementById('ingresosChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line', 
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Ingresos (USD)',
+                        data: montos,
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        tension: 0.3,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: { y: { beginAtZero: true } },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        })();
+
+        // Gráfico de Desempeño (Barras)
+        (function() {
+            const dataScript = document.getElementById('datos-desempeno-json');
+            if (!dataScript) return;
+
+            const datos = JSON.parse(dataScript.textContent);
+            const labels = datos.map(d => d.doctor);
+            const citas = datos.map(d => d.citas_atendidas);
+
+            const ctx = document.getElementById('desempenoChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar', 
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Citas Atendidas',
+                        data: citas,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.7)',
+                            'rgba(75, 192, 192, 0.7)',
+                            'rgba(255, 206, 86, 0.7)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    indexAxis: 'y', 
+                    scales: { x: { beginAtZero: true } },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        })();
+    </script>
+    
+{% endblock extra_js %}

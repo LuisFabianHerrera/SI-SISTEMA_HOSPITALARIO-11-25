@@ -1,0 +1,223 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ titulo }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+    <!-- Librerías para Exportar a PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- Iconos de Bootstrap para el botón de PDF -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        /* La sintaxis CSS es correcta. Si el error persiste, es un problema del linter. */
+        .no-print {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5" id="reporte-desempeno">
+        <header class="mb-4 d-flex justify-content-between align-items-center">
+            <div id="reporte-header">
+                <h1 class="display-5">⭐ {{ titulo }}</h1>
+                <p class="lead">Métricas de productividad y calidad por médico.</p>
+            </div>
+            <!-- Botón de Exportar a PDF -->
+            <button id="export-btn" onclick="exportarPDF('Reporte de Desempeño')" class="btn btn-danger btn-lg shadow-sm">
+                <i class="bi bi-file-earmark-pdf"></i> Exportar a PDF
+            </button>
+        </header>
+
+        <hr>
+
+        <div id="reporte-resumen" class="alert alert-info d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">Total de Citas Atendidas </h4>
+            <span class="fs-3 fw-bold">{{ total_citas_atendidas }}</span>
+        </div>
+
+        <div class="row mt-5">
+            <!-- Contenedor del Gráfico -->
+            <div class="col-lg-6 mb-4" id="reporte-grafico-container">
+                <h2 id="chart-title">Citas Atendidas por Médico</h2>
+                <div class="card shadow">
+                    <div class="card-body">
+                        <canvas id="desempenoChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contenedor de la Tabla -->
+            <div class="col-lg-6 mb-4" id="reporte-tabla-container">
+                <h2 id="table-title">Detalle y Calidad</h2>
+                <table class="table table-striped" id="desempeno-table">
+                    <thead>
+                        <tr>
+                            <th>Médico</th>
+                            <th>Citas Atendidas</th>
+                            <th>Calificación Promedio</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in datos_desempeno %}
+                        <tr>
+                            <td>{{ item.doctor }}</td>
+                            <td>{{ item.citas_atendidas }}</td>
+                            <td>
+                                <span class="badge bg-primary">{{ item.promedio_calificacion }}</span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div id="reporte-footer" class="mt-5 text-center">
+            <a href="{% url 'dashboard_std' %}">← Volver al Dashboard</a> | 
+            <a href="{% url 'logout' %}">Cerrar Sesión</a>
+        </div>
+    </div>
+    
+    {{ datos_desempeno|json_script:"datos-desempeno-json" }}
+
+    <script>
+        // Almacenamos la instancia del gráfico en el objeto window para que sea globalmente accesible
+        window.desempenoChartInstance = null;
+
+        // Lógica de inicialización del Gráfico
+        (function() { 
+            const datosScript = document.getElementById('datos-desempeno-json');
+
+            if (!datosScript) {
+                console.error("No se encontraron datos JSON para el gráfico de desempeño.");
+                return; 
+            }
+
+            const datos = JSON.parse(datosScript.textContent);
+            
+            const labels = datos.map(d => d.doctor);
+            const montos = datos.map(d => d.citas_atendidas);
+
+            const ctx = document.getElementById('desempenoChart').getContext('2d');
+            window.desempenoChartInstance = new Chart(ctx, {
+                type: 'bar', 
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Total Citas Atendidas',
+                        data: montos,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.8)', 'rgba(54, 162, 235, 0.8)',
+                            'rgba(255, 206, 86, 0.8)', 'rgba(75, 192, 192, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)', 'rgba(75, 192, 192, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    indexAxis: 'y', 
+                    scales: {
+                        x: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        })();
+
+        // Función de Exportación a PDF (Mejorada)
+        const exportarPDF = async (fileName) => {
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            let y = 10; // Posición inicial Y
+
+            // Ocultar elementos de la interfaz para una captura limpia
+            const btn = document.getElementById('export-btn');
+            const footer = document.getElementById('reporte-footer');
+            
+            // Usamos la clase CSS corregida para que los elementos no ocupen espacio
+            if (btn) btn.classList.add('no-print');
+            if (footer) footer.classList.add('no-print');
+            
+            // Secciones a capturar con html2canvas
+            const header = document.getElementById('reporte-header');
+            const resumen = document.getElementById('reporte-resumen');
+            const tabla = document.getElementById('reporte-tabla-container'); // Capturamos la tabla y su título
+
+            const sections = [header, resumen];
+            
+            for (const section of sections) {
+                // Esperamos la renderización de la sección
+                const canvas = await html2canvas(section, { scale: 3, useCORS: true, logging: false });
+                const imgData = canvas.toDataURL('image/png');
+                
+                const pdfWidth = 190; // Ancho fijo en mm para A4
+                const imgProps = pdf.getImageProperties(imgData);
+                const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+                // Agregamos la imagen al PDF
+                pdf.addImage(imgData, 'PNG', 10, y, pdfWidth, pdfHeight);
+                y += pdfHeight + 5; // Espaciado
+            }
+            
+            y += 5; // Espacio extra antes del gráfico
+            // 2. Agregar Gráfico (Mejor calidad con toBase64Image)
+            if (window.desempenoChartInstance) {
+                pdf.setFontSize(16);
+                // Añadimos el título del gráfico directamente
+                pdf.text("Citas Atendidas por Médico", 10, y);
+                y += 5;
+                
+                const chartImage = window.desempenoChartInstance.toBase64Image('image/png', 3.0); 
+                
+                const chartPdfWidth = 180; 
+                const chartPdfHeight = 100;
+                
+                pdf.addImage(chartImage, 'PNG', 15, y, chartPdfWidth, chartPdfHeight);
+                y += chartPdfHeight + 10;
+            }
+            
+            // 3. Agregar Tabla
+            if (tabla) {
+                // Comprobamos si necesitamos una nueva página antes de agregar la tabla
+                if (y > 250) { // Si queda menos de 47mm de espacio
+                    pdf.addPage();
+                    y = 10;
+                }
+                
+                pdf.setFontSize(16);
+                // Añadimos el título de la tabla
+                pdf.text("Detalle y Calidad", 10, y);
+                y += 5;
+                
+                // Capturamos solo la tabla sin los márgenes de la columna (col-lg-6) para que ocupe todo el ancho
+                const tableElement = document.getElementById('desempeno-table').parentElement;
+
+                const canvas = await html2canvas(tableElement, { scale: 3, useCORS: true, logging: false });
+                const imgData = canvas.toDataURL('image/png');
+                
+                const pdfWidth = 190;
+                const imgProps = pdf.getImageProperties(imgData);
+                const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+                pdf.addImage(imgData, 'PNG', 10, y, pdfWidth, pdfHeight);
+                y += pdfHeight + 10;
+            }
+
+            // Restaurar visibilidad de los elementos de la interfaz
+            if (btn) btn.classList.remove('no-print');
+            if (footer) footer.classList.remove('no-print');
+
+            pdf.save(`${fileName}.pdf`);
+        };
+    </script>
+</body>
+</html>

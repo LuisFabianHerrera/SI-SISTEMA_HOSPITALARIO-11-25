@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>{{ titulo }}</h2>
+    <p>Total de citas atendidas: {{ total_citas_atendidas }}</p>
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Doctor</th>
+                <th>Citas atendidas</th>
+                <th>Promedio calificación</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for d in datos_desempeno %}
+            <tr>
+                <td>{{ d.doctor }}</td>
+                <td>{{ d.citas_atendidas }}</td>
+                <td>{{ d.promedio_calificacion }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3">No hay datos disponibles</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

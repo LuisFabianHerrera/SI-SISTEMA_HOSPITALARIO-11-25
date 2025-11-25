@@ -1,0 +1,26 @@
+<table class="table table-bordered">
+    <thead class="table-dark">
+        <tr>
+            <th>#</th>
+            <th>Nombre</th>
+            <th>Cargo</th>
+            <th>Horario</th>
+            <th>Grupo</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for empleado in empleados %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ empleado.nombre }}</td>
+            <td>{{ empleado.get_cargo_display }}</td>
+            <td>{{ empleado.horario|default:"-" }}</td>
+            <td>{{ empleado.grupo_cargo|default:"-" }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="5">No hay empleados en este grupo</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

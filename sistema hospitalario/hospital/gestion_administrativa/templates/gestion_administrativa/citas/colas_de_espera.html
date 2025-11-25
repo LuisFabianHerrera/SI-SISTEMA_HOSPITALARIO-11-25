@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Colas de Espera{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <!-- TÍTULO -->
+    <h2 class="mb-4 fw-bold text-primary">
+        <i class="bi bi-clock-history"></i> Colas de Espera
+    </h2>
+
+    <!-- BOTÓN VOLVER -->
+    <a href="{% url 'lista_citas' %}" class="btn btn-secondary mb-3">
+        <i class="bi bi-arrow-left-circle"></i> Volver
+    </a>
+
+    {% if colas %}
+        {% for doctor, citas_doctor in colas.items %}
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-primary text-white fw-bold">
+                    <i class="bi bi-person-badge"></i> {{ doctor.nombre }} 
+                    <span class="badge bg-light text-dark ms-2">{{ citas_doctor|length }} en espera</span>
+                </div>
+
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped table-hover mb-0 text-center align-middle">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Paciente</th>
+                                    <th>Fecha</th>
+                                    <th>Hora</th>
+                                    <th>Nº Atención</th>
+                                    <th>Prioridad</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for c in citas_doctor %}
+                                <tr>
+                                    <td>{{ c.paciente }}</td>
+                                    <td>{{ c.fecha }}</td>
+                                    <td>{{ c.hora }}</td>
+                                    <td>{{ c.numero_atencion }}</td>
+                                    <td>
+                                        {% if c.prioridad == 'Alta' %}
+                                            <span class="badge bg-danger">{{ c.prioridad }}</span>
+                                        {% elif c.prioridad == 'Media' %}
+                                            <span class="badge bg-warning text-dark">{{ c.prioridad }}</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">{{ c.prioridad }}</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="alert alert-warning text-center">
+            No hay pacientes en espera.
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Formulario Diagnóstico - {{ paciente.nombre }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>{{ form.instance.id|yesno:"Editar Diagnóstico,Agregar Diagnóstico" }}</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Guardar</button>
+        <a href="{% url 'lista_diagnosticos' paciente.id %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

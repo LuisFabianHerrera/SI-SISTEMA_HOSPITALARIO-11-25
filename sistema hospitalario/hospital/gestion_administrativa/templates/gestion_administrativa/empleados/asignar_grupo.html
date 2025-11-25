@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block title %}Asignar Grupo{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <!-- TÍTULO -->
+    <h2 class="mb-4 fw-bold text-primary">
+        <i class="bi bi-people-fill"></i> Asignar Grupo a {{ empleado.nombre }}
+        <small class="text-muted">({{ empleado.cargo }} - {{ empleado.departamento }})</small>
+    </h2>
+
+    <!-- FORMULARIO -->
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <form method="POST" class="row g-3">
+                {% csrf_token %}
+                
+                <div class="col-12">
+                    {{ form.grupo_cargo.label_tag }}
+                    {{ form.grupo_cargo|add_class:"form-select" }}
+                    {% if form.grupo_cargo.errors %}
+                        <div class="text-danger small">{{ form.grupo_cargo.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="col-12 mt-3 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-circle"></i> Asignar Grupo
+                    </button>
+                    <a href="{% url 'lista_turnos' %}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left-circle"></i> Volver
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Lista de Habitaciones{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Lista de Habitaciones</h2>
+    
+    <a href="{% url 'registrar_habitacion' %}" class="btn btn-primary mb-3">Registrar Nueva Habitación</a>
+    <a href="{% url 'listar_camas' %}" class="btn btn-primary mb-3">Gestión de Camas</a>
+    <a href="{% url 'dashboard_std' %}" class="btn btn-secondary mb-3">← Volver </a>
+
+
+    <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Departamento</th>
+                <th>Número</th>
+                <th>Tipo</th>
+                <th>Capacidad</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for habitacion in habitaciones %}
+            <tr>
+                <td>{{ habitacion.id }}</td>
+                <td>{{ habitacion.departamento }}</td>
+                <td>{{ habitacion.numero }}</td>
+                <td>{{ habitacion.tipo }}</td>
+                <td>{{ habitacion.capacidad }}</td>
+                <td>
+                    <a href="{% url 'editar_habitacion' habitacion.id %}" class="btn btn-sm btn-warning">Editar</a>
+                    <a href="{% url 'eliminar_habitacion' habitacion.id %}" class="btn btn-sm btn-danger"
+                       onclick="return confirm('¿Deseas eliminar esta habitación?');">Eliminar</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6">No hay habitaciones registradas.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+{% endblock %}

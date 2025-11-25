@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block titulo %}
+    {{ titulo }}
+{% endblock titulo %}
+
+{% block contenido %}
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Detalle de Reclamación #{{ reclamacion.id }}</h4>
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-4">Paciente:</dt>
+                <dd class="col-sm-8">
+                    {% if reclamacion.paciente %}
+                        <a href="{% url 'detalle_paciente' reclamacion.paciente.pk %}">
+                            {{ reclamacion.paciente.nombre_completo }}
+                        </a>
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </dd>
+
+                <dt class="col-sm-4">Plan de Seguro:</dt>
+                <dd class="col-sm-8">{{ reclamacion.plan_seguro.nombre }} ({{ reclamacion.plan_seguro.aseguradora.nombre }})</dd>
+                
+                <dt class="col-sm-4">Fecha de Servicio:</dt>
+                <dd class="col-sm-8">{{ reclamacion.fecha_servicio|date:"Y-m-d" }}</dd>
+
+                <dt class="col-sm-4">Monto Solicitado:</dt>
+                <dd class="col-sm-8 text-danger fw-bold">$ {{ reclamacion.monto_solicitado }}</dd>
+                
+                <dt class="col-sm-4">Monto Aprobado:</dt>
+                <dd class="col-sm-8">
+                    {% if reclamacion.monto_aprobado %}
+                        <span class="text-success fw-bold">$ {{ reclamacion.monto_aprobado }}</span>
+                    {% else %}
+                        Pendiente de Revisión
+                    {% endif %}
+                </dd>
+
+                <dt class="col-sm-4">Estado:</dt>
+                <dd class="col-sm-8">
+                    <span class="badge bg-{% if reclamacion.estado == 'APROBADA' %}success{% elif reclamacion.estado == 'ENVIADA' %}warning{% else %}danger{% endif %}">
+                        {{ reclamacion.get_estado_display }}
+                    </span>
+                </dd>
+                
+                <dt class="col-sm-4">Notas:</dt>
+                <dd class="col-sm-8">{{ reclamacion.notas|default:"Sin notas adicionales." }}</dd>
+            </dl>
+        </div>
+        <div class="card-footer text-muted">
+            <a href="{% url 'lista_reclamaciones' %}" class="btn btn-secondary">Volver a Reclamaciones</a>
+            {% if reclamacion.estado == 'ENVIADA' %}
+                <a href="{% url 'revisar_reclamacion' reclamacion.pk %}" class="btn btn-warning">Revisar Reclamación</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock contenido %}

@@ -1,0 +1,12 @@
+
+{% block content %}
+<h2>Eliminar Cita</h2>
+<p>¿Seguro que deseas eliminar la cita de <b>{{ cita.paciente }}</b> del {{ cita.fecha }}?</p>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Eliminar</button>
+    <a href="{% url 'lista_citas' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+
+{% endblock %}

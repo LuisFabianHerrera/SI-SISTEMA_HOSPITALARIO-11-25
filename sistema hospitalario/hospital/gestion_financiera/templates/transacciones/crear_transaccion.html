@@ -1,0 +1,64 @@
+{% extends "base.html" %} 
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-success text-white">
+            <h2 class="mb-0">{{ titulo }}</h2>
+        </div>
+        <div class="card-body">
+            <form method="POST">
+                {% csrf_token %}
+                
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {% for error in form.non_field_errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.paciente.id_for_label }}" class="form-label">{{ form.paciente.label }}</label>
+                        {{ form.paciente }}
+                        {% if form.paciente.errors %}<div class="text-danger small">{{ form.paciente.errors }}</div>{% endif %}
+                    </div>
+                    <div class="mb-3">
+    <label for="{{ form.tipo.id_for_label }}" class="form-label">{{ form.tipo.label }}</label>
+    {{ form.tipo }}
+    {% if form.tipo.errors %}<div class="text-danger small">{{ form.tipo.errors }}</div>{% endif %}
+</div>
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.monto.id_for_label }}" class="form-label">{{ form.monto.label }}</label>
+                        {{ form.monto }}
+                        {% if form.monto.errors %}<div class="text-danger small">{{ form.monto.errors }}</div>{% endif %}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.metodo_pago.id_for_label }}" class="form-label">{{ form.metodo_pago.label }}</label>
+                        {{ form.metodo_pago }}
+                        {% if form.metodo_pago.errors %}<div class="text-danger small">{{ form.metodo_pago.errors }}</div>{% endif %}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.referencia.id_for_label }}" class="form-label">{{ form.referencia.label }}</label>
+                        {{ form.referencia }}
+                        {% if form.referencia.errors %}<div class="text-danger small">{{ form.referencia.errors }}</div>{% endif %}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="{{ form.estado.id_for_label }}" class="form-label">{{ form.estado.label }}</label>
+                    {{ form.estado }}
+                    {% if form.estado.errors %}<div class="text-danger small">{{ form.estado.errors }}</div>{% endif %}
+                </div>
+
+                <button type="submit" class="btn btn-success btn-lg mt-3">Guardar Transacción</button>
+                <a href="{% url 'lista_transacciones' %}" class="btn btn-secondary btn-lg mt-3">Cancelar</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock content %}

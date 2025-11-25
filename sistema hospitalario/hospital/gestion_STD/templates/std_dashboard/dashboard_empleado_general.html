@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ titulo }}</title>
+    <!-- Incluir Tailwind CSS (usando CDN para simplicidad) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Fuente Inter para una apariencia moderna */
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen p-4 sm:p-8">
+
+    <div class="max-w-4xl mx-auto bg-white shadow-xl rounded-xl p-6 md:p-10">
+        <!-- Encabezado y Título -->
+        <header class="mb-8 border-b pb-4">
+            <h1 class="text-3xl font-extrabold text-blue-800 tracking-tight">
+                {{ titulo }}
+            </h1>
+            <p class="text-gray-500 mt-1">
+                Bienvenido, {{ empleado.nombre }} {{ empleado.apellido }} (Cargo: <span class="font-semibold text-blue-600">{{ empleado.cargo }}</span>).
+            </p>
+            <p class="text-sm text-gray-400 mt-2">
+                Fecha de Hoy: {{ fecha_actual }}
+            </p>
+        </header>
+
+        <!-- Sección de Accesos Rápidos/Métricas Operacionales -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+
+            <!-- Tarjeta de Tareas Pendientes (Simulada) -->
+            <div class="bg-indigo-50 border-l-4 border-indigo-500 rounded-lg p-6 shadow-md">
+                <div class="flex items-center space-x-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M10 12l2-2m0 0l2 2m-2-2v4"/>
+                    </svg>
+                    <div>
+                        <p class="text-lg font-bold text-indigo-700">Citas por Confirmar (Hoy)</p>
+                        <p class="text-3xl font-extrabold text-indigo-900 mt-1">15</p>
+                        <p class="text-sm text-indigo-500">Acción: Gestión de Agenda</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tarjeta de Pacientes Nuevos (Simulada) -->
+            <div class="bg-green-50 border-l-4 border-green-500 rounded-lg p-6 shadow-md">
+                <div class="flex items-center space-x-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9A3 3 0 0015 6H9A3 3 0 006 9m12 0v5a2 2 0 01-2 2H8a2 2 0 01-2-2V9m12 0a3 3 0 00-3-3m3 3h-6m-6 0h6m-3-3v5m0 0l-2 2m2-2l2 2"/>
+                    </svg>
+                    <div>
+                        <p class="text-lg font-bold text-green-700">Pacientes Registrados (Semana)</p>
+                        <p class="text-3xl font-extrabold text-green-900 mt-1">42</p>
+                        <p class="text-sm text-green-500">Acción: Revisar Expedientes</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Enlaces Operacionales Principales -->
+        <div class="mt-8">
+            <h2 class="text-xl font-semibold text-gray-700 mb-4 border-b pb-2">Funciones Clave</h2>
+            <nav class="space-y-3">
+                <a href="/gestion/pacientes/" class="flex items-center p-4 bg-gray-50 hover:bg-gray-100 rounded-lg transition duration-200 shadow-sm hover:shadow-md">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-500 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    <span class="font-medium text-gray-800">Gestión de Expedientes de Pacientes</span>
+                </a>
+                <a href="/gestion/citas/calendario/" class="flex items-center p-4 bg-gray-50 hover:bg-gray-100 rounded-lg transition duration-200 shadow-sm hover:shadow-md">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-500 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h.01M7 11h.01M7 15h.01m8-8h.01m-1-4a2 2 0 012 2v10a2 2 0 01-2 2H7a2 2 0 01-2-2V7a2 2 0 012-2h4m2-4v4m0 0v2m0 4h.01M16 15h.01M16 11h.01M12 11h.01M12 15h.01"/>
+                    </svg>
+                    <span class="font-medium text-gray-800">Visualización y Programación de Citas</span>
+                </a>
+                <a href="/gestion/facturacion/" class="flex items-center p-4 bg-gray-50 hover:bg-gray-100 rounded-lg transition duration-200 shadow-sm hover:shadow-md">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-teal-500 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c1.657 0 3 .895 3 2s-1.343 2-3 2a1.5 1.5 0 01-1.5-1.5c0-.424.167-.83.473-1.127l.95-.95A2 2 0 0113 7.5c0-.828-.672-1.5-1.5-1.5S10 6.672 10 7.5s.672 1.5 1.5 1.5c.328 0 .64-.11.888-.305M12 20a8 8 0 100-16 8 8 0 000 16z"/>
+                    </svg>
+                    <span class="font-medium text-gray-800">Generación y Cobro de Facturas</span>
+                </a>
+            </nav>
+        </div>
+
+        <!-- Pie de página de Simulación -->
+        <footer class="mt-10 pt-4 border-t text-center text-sm text-gray-400">
+            Este es el Dashboard Operacional para empleados no médicos y no gerenciales.
+        </footer>
+    </div>
+    
+</body>
+</html>

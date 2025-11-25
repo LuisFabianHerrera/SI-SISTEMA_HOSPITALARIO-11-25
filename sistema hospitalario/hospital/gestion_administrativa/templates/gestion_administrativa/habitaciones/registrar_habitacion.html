@@ -1,0 +1,78 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registrar Habitación</title>
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+</head>
+<body>
+<div class="container mt-5">
+    <h2>Registrar Habitación</h2>
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <label for="departamento" class="form-label">Departamento</label>
+            {{ form.departamento }}
+        </div>
+
+        <div class="mb-3">
+            <label for="tipo" class="form-label">Tipo</label>
+            {{ form.tipo }}
+        </div>
+
+        <div class="mb-3">
+            <label for="capacidad" class="form-label">Capacidad</label>
+            {{ form.capacidad }}
+        </div>
+
+        <div class="mb-3">
+            <label for="estado" class="form-label">Estado</label>
+            {{ form.estado }}
+        </div>
+
+        <button type="submit" class="btn btn-primary mt-3">Registrar</button>
+        <a href="{% url 'listar_habitaciones' %}" class="btn btn-primary">Volver</a>
+    </form>
+
+    <script>
+        const tiposPorDepartamento = {
+            'Emergencias': ['Camas de observación', 'Cubículos individuales', 'Cubículos compartidos', 'Sala de trauma', 'Área de choque'],
+            'Hospitalización': ['Individual', 'Doble', 'Múltiple', 'Aislamiento'],
+            'Consulta Externa': ['Cubículo de consulta', 'Sala de procedimientos menores'],
+            'Pediatría': ['Individual', 'Compartida', 'Cama acompañante', 'Aislamiento pediátrico'],
+            'Ginecología': ['Preparto', 'Postparto', 'Individual', 'Doble', 'Suite VIP'],
+            'Laboratorio': [],
+            'Farmacia': [],
+            'Administración': [],
+            'Quirófano': ['Quirófano', 'Área de recuperación'],
+            'Radiología': ['Sala de examen', 'Área de espera'],
+            'Cardiología': ['Individual', 'Doble', 'UCI cardíaca'],
+            'UCI': ['Individual con soporte vital', 'Aislamiento'],
+        };
+
+        const departamentoSelect = document.getElementById("departamento");
+        const tipoSelect = document.getElementById("tipo");
+
+        function actualizarTipos() {
+            const departamento = departamentoSelect.value;
+            const tipos = tiposPorDepartamento[departamento] || [];
+
+            tipoSelect.innerHTML = ''; // Limpiar opciones previas
+
+            tipos.forEach(function(tipo) {
+                const option = document.createElement('option');
+                option.value = tipo;
+                option.text = tipo;
+                tipoSelect.appendChild(option);
+            });
+        }
+
+        departamentoSelect.addEventListener('change', actualizarTipos);
+
+        window.addEventListener('load', actualizarTipos);
+    </script>
+</div>
+</body>
+</html>

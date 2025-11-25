@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block titulo %}
+    Confirmar Eliminación - {{ servicio.nombre }}
+{% endblock titulo %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-lg mx-auto" style="max-width: 500px;">
+        <div class="card-header bg-danger text-white">
+            <h3 class="mb-0">⚠️ Confirmar Eliminación</h3>
+        </div>
+        <div class="card-body">
+            <p class="lead">¿Estás absolutamente seguro(a) de que deseas **eliminar permanentemente** el siguiente servicio facturable?</p>
+            
+            <div class="alert alert-warning">
+                **Nombre:** {{ servicio.nombre }}<br>
+                **Precio Base:** ${{ servicio.precio_base|floatformat:2 }}<br>
+                <hr>
+                **¡Advertencia!** Si este servicio ha sido usado en facturas, su eliminación podría fallar o causar inconsistencias en los datos.
+            </div>
+
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="d-grid gap-2 mt-4">
+                    <button type="submit" class="btn btn-danger btn-lg">
+                        <i class="fas fa-trash"></i> Sí, Eliminar Permanentemente
+                    </button>
+                    <a href="{% url 'lista_servicios_facturables' %}" class="btn btn-secondary btn-lg">
+                        Cancelar y Volver
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock content %}

@@ -1,0 +1,55 @@
+{% load diccionario %}
+
+{% block content %}
+<h2 style="text-align:center; margin-bottom:20px;">Calendario de Turnos - {{ month }}/{{ year }}</h2>
+
+{% for departamento, grupos in departamentos.items %}
+    <h3 style="margin-top:30px; color:#2c3e50;">Departamento: {{ departamento }}</h3>
+
+    {% for grupo, empleados in grupos.items %}
+        <h4 style="margin-top:15px; color:#16a085;">{{ grupo }}</h4>
+
+        <table style="width:100%; border-collapse: collapse; text-align:center; font-family: Arial, sans-serif; margin-bottom:20px;">
+            <thead>
+                <tr style="background-color:#34495e; color:white;">
+                    {% for dia in semanas.0 %}
+                        <th style="padding:5px;">{{ dia|date:"D d" }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    {% for dia in semanas.0 %}
+                        <td style="vertical-align: top; padding:5px; border:1px solid #ddd; min-width:120px; height:100px;">
+                            {% for emp in empleados %}
+                                {% with turnos_emp=turnos_empleados|dictget:emp.id %}
+                                    {% with turno=turnos_emp|dictget:dia %}
+                                        {% if emp.grupo_cargo == "Grupo 1" %}
+                                            <span style="color:white; background-color:#e74c3c; padding:2px 4px; border-radius:4px; display:block; margin-bottom:2px;">
+                                                {{ emp.nombre }}: {{ turno|default:"—" }}
+                                            </span>
+                                        {% elif emp.grupo_cargo == "Grupo 2" %}
+                                            <span style="color:white; background-color:#3498db; padding:2px 4px; border-radius:4px; display:block; margin-bottom:2px;">
+                                                {{ emp.nombre }}: {{ turno|default:"—" }}
+                                            </span>
+                                        {% elif emp.grupo_cargo == "Grupo 3" %}
+                                            <span style="color:white; background-color:#f39c12; padding:2px 4px; border-radius:4px; display:block; margin-bottom:2px;">
+                                                {{ emp.nombre }}: {{ turno|default:"—" }}
+                                            </span>
+                                        {% else %}
+                                            <span style="padding:2px 4px; display:block; margin-bottom:2px;">
+                                                {{ emp.nombre }}: {{ turno|default:"—" }}
+                                            </span>
+                                        {% endif %}
+                                    {% endwith %}
+                                {% endwith %}
+                            {% endfor %}
+                        </td>
+                    {% endfor %}
+                </tr>
+            </tbody>
+        </table>
+    {% endfor %}
+{% endfor %}
+
+{% endblock %}
