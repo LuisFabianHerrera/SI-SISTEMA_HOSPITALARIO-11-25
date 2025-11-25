@@ -75,13 +75,9 @@ El proyecto sigue una estructura estándar de Django:
 │   └── manage.py
 * **Flujo de trabajo principal:** Recepcionista registra, Médico consulta/actualiza historial.
 
-## ✉️ Contacto
-Para cualquier consulta o colaboración, no dudes en contactar al equipo de desarrollo:
-
 * **Estudiantes:**
     * Fabian Herrera Luis Benjamín
     * Mendoza Conde Rolando Junior
     * Quino Serrano Yonatan
     * Siles Mejía Marvin
     * Torrez Miranda Luis Ángel
-* **Docente Guía:** Ing. Edson David Veneros Vásquez
