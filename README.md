@@ -66,10 +66,12 @@ Una vez que el servidor Django esté en funcionamiento, accede a la aplicación 
 ## 📂 Estructura del Proyecto
 El proyecto sigue una estructura estándar de Django:
 ├── SI-SISTEMA_HOSPITALARIO-11-25/
-│   ├── Modulo citas/
+│   ├── Modulo Financiero/
 │   ├── Modulo pacientes/
-│   ├── si_sistema_hospitalario/  # Configuración del proyecto (settings, urls)
-│   ├── database/               # Script SQL (Opcional)
+│   ├── Modulo std/
+│   ├── Modulo administracion/
+│   ├── si_sistema_hospitalario/
+│   ├── database/             
 │   └── manage.py
 * **Flujo de trabajo principal:** Recepcionista registra, Médico consulta/actualiza historial.
 
